@@ -55,8 +55,12 @@ async def on_message(message):
 
 #Used to automatically update color
 async def on_updatecolor(message):
-    towerRGB = twitterColorDetection.getRGB()
-    await message.channel.send(towerRGB)
+    try:
+        towerRGB = twitterColorDetection.getRGB()
+        towerColor = twitterColorDetection.getColorNames(towerRGB[0], towerRGB[1])
+        await message.channel.send(towerColor)
+    except Exception as e:
+        await message.channel.send("Error: " + str(e))
 
 
 keyFile = open('keys.txt', 'r')
