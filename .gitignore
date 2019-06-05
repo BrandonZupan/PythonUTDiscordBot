@@ -1,3 +1,9 @@
 # Discord Key File
 keys.txt
+
+# Icons
 *.png
+*.jpg
+
+#Python stuff
+/__pycache__
