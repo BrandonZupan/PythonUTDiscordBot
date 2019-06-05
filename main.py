@@ -27,19 +27,25 @@ async def on_message(message):
             #Check if admin
             if message.author.guild_permissions.administrator:
 
-                try:
-                    with open(command[1] + ".png", "rb") as image:
-                        f = image.read()
-                        b = bytearray(f)
-                        await message.guild.edit(icon=b)
-                        await message.channel.send("Icon set to " + command[1])
-                #If the file isn't found, then the tower color is probably unknown
-                except FileNotFoundError:
-                    await message.channel.send("Error: Unknown tower color. " + 
-                    "Options are white, orange, orangewhite, and dark")
-                #No option was entered
-                except IndexError:
-                    await message.channel.send("Please enter an argument")
+                #See if we are auto updating
+                if command[1] == "auto":
+                    await on_updatecolor(message)
+
+                else:
+
+                    try:
+                        with open(command[1] + ".png", "rb") as image:
+                            f = image.read()
+                            b = bytearray(f)
+                            await message.guild.edit(icon=b)
+                            await message.channel.send("Icon set to " + command[1])
+                    #If the file isn't found, then the tower color is probably unknown
+                    except FileNotFoundError:
+                        await message.channel.send("Error: Unknown tower color. " + 
+                        "Options are white, orange, orangewhite, and dark")
+                    #No option was entered
+                    except IndexError:
+                        await message.channel.send("Please enter an argument")
 
             else: 
                 await message.channel.send("You do not have permission to do that")
@@ -48,9 +54,9 @@ async def on_message(message):
             await message.channel.send('Unknown Command')
 
 #Used to automatically update color
-async def on_updatecolor():
+async def on_updatecolor(message):
     towerRGB = twitterColorDetection.getRGB()
-    await message.channel.send("Colors: " + towerRGB[0] + "and " + towerRGB[1])
+    await message.channel.send(towerRGB)
 
 
 keyFile = open('keys.txt', 'r')
