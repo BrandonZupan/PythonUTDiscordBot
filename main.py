@@ -13,15 +13,16 @@ async def on_message(message):
     
     #Check if they're talking to bot
     if message.content.startswith('$'):
-        #Break up the message text into an array
-        command = message.content.split()
+        #Break up the message text into an array of lowercase letters
+        command = message.content.lower()
+        command = command.split()
         print(command)
 
         #Hello: Replies hello
-        if message.content.startswith('$hello'):
+        if command[0] == "$hello":
             await message.channel.send('Hello!')
 
-        if message.content.startswith('$updateicon'):
+        if command[0] == "$updateicon":
             with open("white.png", "rb") as image:
                 f = image.read()
                 b = bytearray(f)
