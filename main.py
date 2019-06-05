@@ -40,10 +40,10 @@ async def on_message(message):
                     await message.channel.send("Please enter an argument")
 
             else: 
-                message.channel.send("You do not have permission to do that")
+                await message.channel.send("You do not have permission to do that")
 
         else:
-            message.channel.send('Unknown Command')
+            await message.channel.send('Unknown Command')
 
 keyFile = open('keys.txt', 'r')
 key = keyFile.read()
