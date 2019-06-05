@@ -22,12 +22,21 @@ async def on_message(message):
         if command[0] == "$hello":
             await message.channel.send('Hello!')
 
-        if command[0] == "$updateicon":
-            with open("white.png", "rb") as image:
-                f = image.read()
-                b = bytearray(f)
-                await message.guild.edit(icon=b)
-                await message.channel.send("Icon set to white")
+        elif command[0] == "$updateicon":
+            #Check if admin
+            if message.author.guild_permissions.administrator:
+
+                with open("white.png", "rb") as image:
+                    f = image.read()
+                    b = bytearray(f)
+                    await message.guild.edit(icon=b)
+                    await message.channel.send("Icon set to white")
+
+            else: 
+                message.channel.send("You do not have permission to do that")
+
+        else:
+            message.channel.send('Unknown Command')
 
 keyFile = open('keys.txt', 'r')
 key = keyFile.read()
