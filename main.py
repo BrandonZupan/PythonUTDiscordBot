@@ -25,15 +25,19 @@ async def on_message(message):
         elif command[0] == "$updateicon":
             #Check if admin
             if message.author.guild_permissions.administrator:
+
                 try:
                     with open(command[1] + ".png", "rb") as image:
                         f = image.read()
                         b = bytearray(f)
                         await message.guild.edit(icon=b)
-                        await message.channel.send("Icon set to white")
+                        await message.channel.send("Icon set to " + command[1])
                 #If the file isn't found, then the tower color is probably unknown
                 except FileNotFoundError:
-                    await message.channel.send("Error: Unknown tower color")
+                    await message.channel.send("Error: Unknown tower color.  Options are white, orange, orangewhite, and dark")
+                #No option was entered
+                except IndexError:
+                    await message.channel.send("Please enter an argument")
 
             else: 
                 message.channel.send("You do not have permission to do that")
