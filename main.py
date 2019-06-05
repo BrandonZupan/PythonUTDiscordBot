@@ -1,4 +1,5 @@
 import discord
+import twitterColorDetection
 
 client = discord.Client()
 
@@ -34,7 +35,8 @@ async def on_message(message):
                         await message.channel.send("Icon set to " + command[1])
                 #If the file isn't found, then the tower color is probably unknown
                 except FileNotFoundError:
-                    await message.channel.send("Error: Unknown tower color.  Options are white, orange, orangewhite, and dark")
+                    await message.channel.send("Error: Unknown tower color. " + 
+                    "Options are white, orange, orangewhite, and dark")
                 #No option was entered
                 except IndexError:
                     await message.channel.send("Please enter an argument")
@@ -44,6 +46,12 @@ async def on_message(message):
 
         else:
             await message.channel.send('Unknown Command')
+
+#Used to automatically update color
+async def on_updatecolor():
+    towerRGB = twitterColorDetection.getRGB()
+    await message.channel.send("Colors: " + towerRGB[0] + "and " + towerRGB[1])
+
 
 keyFile = open('keys.txt', 'r')
 key = keyFile.read()
