@@ -15,4 +15,5 @@ async def on_message(message):
         await message.channel.send('Hello!')
 
 keyFile = open('keys.txt', 'r')
-client.run(keyFile.read())
+key = keyFile.read()
+client.run(key)
