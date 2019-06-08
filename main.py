@@ -22,13 +22,7 @@ async def on_message(message):
         command = command.split()
         print(command)
 
-        #Time
-        elif command[0] == "$time":
-            currentDT = datetime.datetime.now()
-            outTime = currentDT.strftime("%I:%M %p")
-            await message.channel.send("It is " + outTime + " and OU still sucks!")
-
-        elif command[0] == "$updateicon":
+        if command[0] == "$updateicon":
             #Check if admin
             if message.author.guild_permissions.administrator:
 
@@ -78,6 +72,11 @@ async def updateicon(ctx, color):
 async def score(ctx):
     ctx.send("Texas beat OU 48 to 45 in the Red River Rivalry with a last second field goal by Dicker the Kicker! :metal:")
 
+@client.command(name='time')
+async def timeCommand(ctx):
+    currentDT = datetime.datetime.now()
+    outTime = currentDT.strftime("%I:%M %p")
+    ctx.send("It is " + outTime + " and OU still sucks!")
 
 #Used to automatically update color
 async def on_updatecolor(message):
