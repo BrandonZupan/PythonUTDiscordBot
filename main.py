@@ -1,11 +1,13 @@
 import discord
+from discord.ext import commands
 
-client = discord.Client()
+client = commands.Bot(command_prefix='$')
 
 @client.event
 async def on_ready():
     print('We have logged in as {0.user}'.format(client))
 
+"""
 @client.event
 async def on_message(message):
     if message.author == client.user:
@@ -41,9 +43,12 @@ async def on_message(message):
 
             else: 
                 await message.channel.send("You do not have permission to do that")
+"""
 
-        else:
-            await message.channel.send('Unknown Command')
+@client.command()
+async def hello(ctx):
+    await ctx.send("Hello " + str(ctx.author).split('#')[0] + '!')
+
 
 keyFile = open('keys.txt', 'r')
 key = keyFile.read()
