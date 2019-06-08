@@ -22,10 +22,6 @@ async def on_message(message):
         command = command.split()
         print(command)
 
-        #OU SUCKS
-        elif command[0] == "$score":
-            await message.channel.send("Texas beat OU 48 to 45 in the Red River Rivalry with a last second field goal by Dicker the Kicker! :metal:")
-
         #Time
         elif command[0] == "$time":
             currentDT = datetime.datetime.now()
@@ -78,7 +74,9 @@ async def updateicon(ctx, color):
     except FileNotFoundError:
         await ctx.send("Error: Unknown tower color.  Options are white, orange, orangewhite, and dark")
 
-
+@client.command(name='score')
+async def score(ctx):
+    ctx.send("Texas beat OU 48 to 45 in the Red River Rivalry with a last second field goal by Dicker the Kicker! :metal:")
 
 
 #Used to automatically update color
