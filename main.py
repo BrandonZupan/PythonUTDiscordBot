@@ -45,6 +45,19 @@ async def timeCommand(ctx):
     outTime = currentDT.strftime("%I:%M %p")
     await ctx.send("It is " + outTime + " and OU still sucks!")
 
+@client.command(name='cc')
+@commands.check(is_admin)
+async def cc(ctx, *args):
+    #If zero arguments, list all commands
+    if len(args) == 0:
+        return
+    #If one argument, delete that command
+    if len(args) == 1:
+        return
+    #If 2 or more arguments, combine them and modify database
+    if len(args) >= 2:
+        return
+
 #Used to automatically update color
 async def on_updatecolor(ctx):
     try:
