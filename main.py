@@ -1,12 +1,14 @@
 import discord
 import twitterColorDetection
 import datetime
+from discord.ext import commands
 
-client = discord.Client()
+client = commands.Bot(command_prefix='$')
 
 @client.event
 async def on_ready():
     print('We have logged in as {0.user}'.format(client))
+
 
 @client.event
 async def on_message(message):
@@ -64,8 +66,29 @@ async def on_message(message):
             else: 
                 await message.channel.send("You do not have permission to do that")
 
-        else:
-            await message.channel.send('Unknown Command')
+
+async def is_admin(ctx):
+    return ctx.message.author.guild_permissions.administrator
+
+@client.command(name='hello')
+async def hello(ctx):
+    await ctx.send("Hello " + str(ctx.author).split('#')[0] + '!')
+
+@client.command(name='updateicon')
+@commands.check(is_admin)
+async def updateicon(ctx, color):
+    try:
+        with open(color + ".png", "rb") as image:
+            f = image.read()
+            b = bytearray(f)
+            await ctx.guild.edit(icon=b)
+            await ctx.channel.send("Icon set to " + color)
+    #If the file isn't found, then the tower color is probably unknown
+    except FileNotFoundError:
+        await ctx.send("Error: Unknown tower color.  Options are white, orange, orangewhite, and dark")
+
+
+
 
 #Used to automatically update color
 async def on_updatecolor(message):
