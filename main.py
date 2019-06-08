@@ -22,15 +22,6 @@ async def on_message(message):
         command = command.split()
         print(command)
 
-        #Hello: Replies hello
-        if command[0] == "$hello":
-            name = "  "
-            name = message.author
-            name = str(name)
-            #print(name)
-            #name = name.split("#")
-            await message.channel.send('Hello ' + name.split('#')[0] + '!')
-
         #OU SUCKS
         elif command[0] == "$score":
             await message.channel.send("Texas beat OU 48 to 45 in the Red River Rivalry with a last second field goal by Dicker the Kicker! :metal:")
