@@ -58,6 +58,8 @@ async def hello(ctx):
 @client.command(name='updateicon')
 @commands.check(is_admin)
 async def updateicon(ctx, color):
+    if color == 'auto':
+        color = await on_updatecolor(ctx)
     try:
         with open(color + ".png", "rb") as image:
             f = image.read()
@@ -79,7 +81,7 @@ async def timeCommand(ctx):
     await ctx.send("It is " + outTime + " and OU still sucks!")
 
 #Used to automatically update color
-async def on_updatecolor(message):
+async def on_updatecolor(ctx):
     try:
         towerRGB = twitterColorDetection.getRGB()
         towerColor = twitterColorDetection.getColorNames(towerRGB[0], towerRGB[1])
@@ -97,7 +99,7 @@ async def on_updatecolor(message):
 
 
     except Exception as e:
-        await message.channel.send("Error: " + str(e))
+        await ctx.send("Error: " + str(e))
 
 
 keyFile = open('keys.txt', 'r')
