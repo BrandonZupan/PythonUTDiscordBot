@@ -9,7 +9,7 @@ client = commands.Bot(command_prefix='$')
 async def on_ready():
     print('We have logged in as {0.user}'.format(client))
 
-
+"""
 @client.event
 async def on_message(message):
     if message.author == client.user:
@@ -46,7 +46,7 @@ async def on_message(message):
 
             else: 
                 await message.channel.send("You do not have permission to do that")
-
+"""
 
 async def is_admin(ctx):
     return ctx.message.author.guild_permissions.administrator
@@ -70,13 +70,13 @@ async def updateicon(ctx, color):
 
 @client.command(name='score')
 async def score(ctx):
-    ctx.send("Texas beat OU 48 to 45 in the Red River Rivalry with a last second field goal by Dicker the Kicker! :metal:")
+    await ctx.send("Texas beat OU 48 to 45 in the Red River Rivalry with a last second field goal by Dicker the Kicker! :metal:")
 
 @client.command(name='time')
 async def timeCommand(ctx):
     currentDT = datetime.datetime.now()
     outTime = currentDT.strftime("%I:%M %p")
-    ctx.send("It is " + outTime + " and OU still sucks!")
+    await ctx.send("It is " + outTime + " and OU still sucks!")
 
 #Used to automatically update color
 async def on_updatecolor(message):
