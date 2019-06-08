@@ -11,7 +11,7 @@ async def on_ready():
 
 async def is_admin(ctx):
     return ctx.message.author.guild_permissions.administrator
-    
+
 ##############
 ###Commands###
 ##############
@@ -51,7 +51,7 @@ async def on_updatecolor(ctx):
         towerRGB = twitterColorDetection.getRGB()
         towerColor = twitterColorDetection.getColorNames(towerRGB[0], towerRGB[1])
         #Determine the correct icon
-        towerColorName = towerColor[0] + towerColor[1]
+        towerColorName = towerColor[0].lower() + towerColor[1].lower()
         possibleColors = {
             "orangeorange": "orange",
             "whiteorange": "orangewhite",
