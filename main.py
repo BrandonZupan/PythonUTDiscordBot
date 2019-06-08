@@ -45,9 +45,27 @@ async def on_message(message):
                 await message.channel.send("You do not have permission to do that")
 """
 
-@client.command()
+async def is_admin(ctx):
+    return ctx.message.author.guild_permissions.administrator
+
+@client.command(name='hello')
 async def hello(ctx):
     await ctx.send("Hello " + str(ctx.author).split('#')[0] + '!')
+
+@client.command(name='updateicon')
+@commands.check(is_admin)
+async def updateicon(ctx, color):
+    try:
+        with open(color + ".png", "rb") as image:
+            f = image.read()
+            b = bytearray(f)
+            await ctx.guild.edit(icon=b)
+            await ctx.channel.send("Icon set to " + color)
+    #If the file isn't found, then the tower color is probably unknown
+    except FileNotFoundError:
+        await ctx.send("Error: Unknown tower color.  Options are white, orange, orangewhite, and dark")
+
+
 
 
 keyFile = open('keys.txt', 'r')
