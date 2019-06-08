@@ -1,5 +1,6 @@
 import discord
 import twitterColorDetection
+import datetime
 
 client = discord.Client()
 
@@ -31,6 +32,12 @@ async def on_message(message):
         #OU SUCKS
         elif command[0] == "$score":
             await message.channel.send("Texas beat OU 48 to 45 in the Red River Rivalry with a last second field goal by Dicker the Kicker! :metal:")
+
+        #Time
+        elif command[0] == "$time":
+            currentDT = datetime.datetime.now()
+            outTime = currentDT.strftime("%I:%M %p")
+            await message.channel.send("It is " + outTime + " and OU still sucks!")
 
         elif command[0] == "$updateicon":
             #Check if admin
