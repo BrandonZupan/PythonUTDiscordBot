@@ -3,6 +3,16 @@ import twitterColorDetection
 import datetime
 from discord.ext import commands
 
+class ccCommand:
+    def __init__(self, name, responce):
+        self.name = name
+        self.responce = responce
+
+
+
+
+
+
 client = commands.Bot(command_prefix='$')
 
 @client.event
@@ -56,7 +66,8 @@ async def cc(ctx, *args):
         return
     #If 2 or more arguments, combine them and modify database
     if len(args) >= 2:
-        return
+        newCC = ccCommand(args[0], ' '.join(args[1:]))
+        await ctx.send("Command " + newCC.name + " with link " + newCC.responce)
 
 #Used to automatically update color
 async def on_updatecolor(ctx):
