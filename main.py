@@ -73,11 +73,16 @@ async def timeCommand(ctx):
 async def cc(ctx, *args):
     #If zero arguments, list all commands
     if len(args) == 0:
-        for instance in session.query(ccCommand).order_by(ccCommand.id):
+        for instance in session.query(ccCommand).order_by(ccCommand.name):
             print(instance.name, instance.responce)
     #If one argument, delete that command
     if len(args) == 1:
-        return
+        print(args[0])
+        victim = session.query(ccCommand).filter_by(name=args[0]).one()
+        print(victim.responce)
+        session.delete(victim)
+        session.commit()
+        await ctx.message.add_reaction('👌')
     #If 2 or more arguments, combine them and modify database
     if len(args) >= 2:
         #newCC = ccCommand(args[0], ' '.join(args[1:]))
@@ -86,7 +91,7 @@ async def cc(ctx, *args):
         session.merge(newCC)
         session.commit()
         #await ctx.send("Command " + newCC.name + " with link " + newCC.responce)
-        await ctx.add_reaction('👌')
+        await ctx.message.add_reaction('👌')
 
 @client.event
 async def on_command_error(ctx, error):
@@ -100,6 +105,8 @@ async def on_command_error(ctx, error):
             if instance.name == command[0][1:]:
                 await ctx.send(instance.responce)
                 return
+    else:
+        print(error)
 
 """
 #Look if command is in the database
