@@ -85,7 +85,8 @@ async def cc(ctx, *args):
         newCC = ccCommand(name=args[0], responce=' '.join(args[1:]))
         session.merge(newCC)
         session.commit()
-        await ctx.send("Command " + newCC.name + " with link " + newCC.responce)
+        #await ctx.send("Command " + newCC.name + " with link " + newCC.responce)
+        await ctx.add_reaction('👌')
 
 @client.event
 async def on_command_error(ctx, error):
