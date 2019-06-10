@@ -2,17 +2,30 @@ import discord
 import twitterColorDetection
 import datetime
 from discord.ext import commands
+from sqlalchemy import create_engine, Column, Integer, String
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
 
-class ccCommand:
-    def __init__(self, name, responce):
-        self.name = name
-        self.responce = responce
+#SQL Database
+engine = create_engine('sqlite:///:memory:', echo=True)
+Base = declarative_base()
 
+class ccCommand(Base):
+    __tablename__ = "imageCommands"
+    
+    #Has a column for the ID, name, and responce
+    id = Column(Integer, primary_key=True)
+    name = Column(String)
+    responce = Column(String)
 
+#Create the Table   
+Base.metadata.create_all(engine)
 
+#Start the SQL session
+Session = sessionmaker(bind=engine)
+session = Session()
 
-
-
+#Discord client
 client = commands.Bot(command_prefix='$')
 
 @client.event
@@ -60,13 +73,18 @@ async def timeCommand(ctx):
 async def cc(ctx, *args):
     #If zero arguments, list all commands
     if len(args) == 0:
-        return
+        for instance in session.query(ccCommand).order_by(ccCommand.id):
+            print(instance.name, instance.responce)
     #If one argument, delete that command
     if len(args) == 1:
         return
     #If 2 or more arguments, combine them and modify database
     if len(args) >= 2:
-        newCC = ccCommand(args[0], ' '.join(args[1:]))
+        #newCC = ccCommand(args[0], ' '.join(args[1:]))
+        #await ctx.send("Command " + newCC.name + " with link " + newCC.responce)
+        newCC = ccCommand(name=args[0], responce=' '.join(args[1:]))
+        session.add(newCC)
+        session.commit()
         await ctx.send("Command " + newCC.name + " with link " + newCC.responce)
 
 #Used to automatically update color
