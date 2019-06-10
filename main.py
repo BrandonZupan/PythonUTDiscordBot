@@ -87,6 +87,39 @@ async def cc(ctx, *args):
         session.commit()
         await ctx.send("Command " + newCC.name + " with link " + newCC.responce)
 
+@client.event
+async def on_command_error(ctx, error):
+    if isinstance(error, commands.errors.CommandNotFound):
+        #await ctx.send(ctx.message.content)
+        command = ctx.message.content.lower()
+        command = command.split(" ", 1)
+
+        #Look if its in the database
+        for instance in session.query(ccCommand).order_by(ccCommand.id):
+            if instance.name == command[0][1:]:
+                await ctx.send(instance.responce)
+                return
+
+"""
+#Look if command is in the database
+@client.event
+async def on_message(message):
+
+    if message.author == client.user:
+        return
+    
+    #Check if they're talking to bot
+    if message.content.startswith('$'):
+        command = message.content.lower()
+        command = command.split(" ", 1)
+
+        #Look if its in the database
+        for instance in session.query(ccCommand).order_by(ccCommand.id):
+            if instance.name == command[0]:
+                await message.channel.send(instance.responce)
+                return
+"""
+
 #Used to automatically update color
 async def on_updatecolor(ctx):
     try:
