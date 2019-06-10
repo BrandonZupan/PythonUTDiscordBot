@@ -7,7 +7,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
 #SQL Database
-engine = create_engine('sqlite:///:memory:', echo=True)
+engine = create_engine('sqlite:///responces.db', echo=True)
 Base = declarative_base()
 
 class ccCommand(Base):
@@ -86,7 +86,7 @@ async def cc(ctx, *args):
         session.delete(victim)
         session.commit()
         await ctx.message.add_reaction('👌')
-        
+
     #If 2 or more arguments, combine them and modify database
     if len(args) >= 2:
         #newCC = ccCommand(args[0], ' '.join(args[1:]))

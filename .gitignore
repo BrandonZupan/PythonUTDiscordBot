@@ -7,3 +7,6 @@ keys.txt
 
 #Python stuff
 /__pycache__
+
+#Database
+*.db
