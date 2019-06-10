@@ -14,8 +14,8 @@ class ccCommand(Base):
     __tablename__ = "imageCommands"
     
     #Has a column for the ID, name, and responce
-    id = Column(Integer, primary_key=True)
-    name = Column(String)
+    #id = Column(Integer, primary_key=True)
+    name = Column(String, primary_key=True)
     responce = Column(String)
 
 #Create the Table   
@@ -83,7 +83,7 @@ async def cc(ctx, *args):
         #newCC = ccCommand(args[0], ' '.join(args[1:]))
         #await ctx.send("Command " + newCC.name + " with link " + newCC.responce)
         newCC = ccCommand(name=args[0], responce=' '.join(args[1:]))
-        session.add(newCC)
+        session.merge(newCC)
         session.commit()
         await ctx.send("Command " + newCC.name + " with link " + newCC.responce)
 
@@ -95,7 +95,7 @@ async def on_command_error(ctx, error):
         command = command.split(" ", 1)
 
         #Look if its in the database
-        for instance in session.query(ccCommand).order_by(ccCommand.id):
+        for instance in session.query(ccCommand).order_by(ccCommand.name):
             if instance.name == command[0][1:]:
                 await ctx.send(instance.responce)
                 return
