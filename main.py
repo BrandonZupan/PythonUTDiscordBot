@@ -73,8 +73,11 @@ async def timeCommand(ctx):
 async def cc(ctx, *args):
     #If zero arguments, list all commands
     if len(args) == 0:
+        commandList = str()
         for instance in session.query(ccCommand).order_by(ccCommand.name):
-            print(instance.name, instance.responce)
+            commandList += instance.name + ' '
+        await ctx.send(commandList)
+
     #If one argument, delete that command
     if len(args) == 1:
         print(args[0])
@@ -83,6 +86,7 @@ async def cc(ctx, *args):
         session.delete(victim)
         session.commit()
         await ctx.message.add_reaction('👌')
+        
     #If 2 or more arguments, combine them and modify database
     if len(args) >= 2:
         #newCC = ccCommand(args[0], ' '.join(args[1:]))
