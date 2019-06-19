@@ -7,7 +7,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
 #SQL Database
-engine = create_engine('sqlite:///responces.db', echo=True)
+engine = create_engine('sqlite:///:memory:', echo=True)
 Base = declarative_base()
 
 class ccCommand(Base):
@@ -33,7 +33,17 @@ async def on_ready():
     print('We have logged in as {0.user}'.format(client))
 
 async def is_admin(ctx):
-    return ctx.message.author.guild_permissions.administrator
+    #permissions = ctx.message.author.roles
+    role = discord.utils.get(ctx.guild.roles, id=490250496028704768)
+    #Moderator on UT Discord
+    if role in ctx.author.roles:
+        return True
+    #Admin on test server
+    role = discord.utils.get(ctx.guild.roles, id=527944399649243146)
+    if role in ctx.author.roles:
+        return True
+    else:
+        return False
 
 ##############
 ###Commands###
