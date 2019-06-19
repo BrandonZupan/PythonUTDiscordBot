@@ -58,7 +58,7 @@ def getColorNames(baseColor, topColor):
     Inputs: Base and top RGB values
     Output: List of tower colors with base first and top second
     """
-    if (100 < baseColor[0] < 200):
+    if (100 < baseColor[0] < 175):
             if (50 < baseColor[1] < 150):
                     if (50 < baseColor[2] < 150):
                             baseColorName = "Orange"
