@@ -113,9 +113,7 @@ async def cc(ctx, *args):
 
     #If one argument, delete that command
     if len(args) == 1:
-        print(args[0])
         victim = session.query(ccCommand).filter_by(name=args[0]).one()
-        print(victim.responce)
         session.delete(victim)
         session.commit()
         await ctx.message.add_reaction('👌')
