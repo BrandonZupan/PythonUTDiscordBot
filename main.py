@@ -70,6 +70,7 @@ async def updateicon(ctx, color):
             b = bytearray(f)
             await ctx.guild.edit(icon=b)
             await ctx.channel.send("Icon set to " + color)
+            logging.info("Icon set to " + color + " by " + ctx.author.nick)
     #If the file isn't found, then the tower color is probably unknown
     except FileNotFoundError:
         await ctx.send("Error: Unknown tower color.  Options are white, orange, orangewhite, and dark")
