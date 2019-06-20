@@ -11,7 +11,7 @@ import logging
 logging.basicConfig(level=logging.INFO)
 
 #SQL Database
-engine = create_engine('sqlite:///:memory:', echo=False)
+engine = create_engine('sqlite:///responces.db', echo=False)
 Base = declarative_base()
 
 #Nitro Database, must be approved into SQL
