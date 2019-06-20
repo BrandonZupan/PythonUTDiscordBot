@@ -59,9 +59,14 @@ async def hello(ctx):
     await ctx.send(message)
     logmessage(ctx, message)
 
-@client.command(name='updateicon')
+@client.command(name='updateicon', hidden=True)
 @commands.check(is_admin)
 async def updateicon(ctx, color):
+    """
+    Updates the server icon
+    
+    Color options are orange, orangewhite, white, dark, or auto
+    """
     if color == 'auto':
         color = await on_updatecolor(ctx)
     try:
@@ -87,9 +92,18 @@ async def timeCommand(ctx):
     await ctx.send(message)
     logmessage(ctx, message)
 
-@client.command(name='cc')
+@client.command(name='cc', hidden=True)
 @commands.check(is_admin)
 async def cc(ctx, *args):
+    """
+    Modifies the command database
+
+    List commands: $cc
+    Modify or create a command: $cc <command_name> <responce>
+    Delete a command: $cc <command_name>
+
+    Bot will confirm with :ok_hand:
+    """
     #If zero arguments, list all commands
     if len(args) == 0:
         commandList = str()
