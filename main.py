@@ -14,6 +14,10 @@ logging.basicConfig(level=logging.INFO)
 engine = create_engine('sqlite:///:memory:', echo=False)
 Base = declarative_base()
 
+#Nitro Database, must be approved into SQL
+global nitroCommands
+nitroCommands = {}
+
 class ccCommand(Base):
     __tablename__ = "imageCommands"
     
@@ -125,13 +129,25 @@ async def modifycommand(ctx, *args):
     """
     Nitro command for modifying the command database
 
-    List commands: $cc
-    Modify or create a command: $cc <command_name> <responce>
-    Delete a command: $cc <command_name>
+    List commands: $modiftycommand
+    Modify or create a command: $modifycommand <command_name> <responce>
 
     Action must be confirmed by a moderator with $confirm <command_name>
     """
-    await ctx.send("Yeet")
+
+    #If zero arguments, list all commands
+    if len(args) == 0:
+        commandList = str()
+        for instance in session.query(ccCommand).order_by(ccCommand.name):
+            commandList += instance.name + ' '
+        await ctx.send(commandList)
+
+    #If 2 or more arguments, combine them and modify database
+    if len(args) >= 2:
+        #Add to nitro database
+        nitroCommands[args[0]] = ' '.join(args[1:])
+        await ctx.send("Recieved, please wait for moderator to confirm it")
+
 
 @client.command(name='cc', hidden=True)
 @commands.check(is_admin)
