@@ -5,9 +5,13 @@ from discord.ext import commands
 from sqlalchemy import create_engine, Column, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
+import logging
+
+#Start logging
+logging.basicConfig(level=logging.INFO)
 
 #SQL Database
-engine = create_engine('sqlite:///responces.db', echo=False)
+engine = create_engine('sqlite:///:memory:', echo=False)
 Base = declarative_base()
 
 class ccCommand(Base):
@@ -51,7 +55,9 @@ async def is_admin(ctx):
 
 @client.command(name='hello')
 async def hello(ctx):
-    await ctx.send("Hello " + str(ctx.author).split('#')[0] + '!')
+    message = "Hello " + str(ctx.author).split('#')[0] + '!'
+    await ctx.send(message)
+    logmessage(ctx, message)
 
 @client.command(name='updateicon')
 @commands.check(is_admin)
@@ -76,7 +82,9 @@ async def score(ctx):
 async def timeCommand(ctx):
     currentDT = datetime.datetime.now()
     outTime = currentDT.strftime("%I:%M %p")
-    await ctx.send("It is " + outTime + " and OU still sucks!")
+    message = "It is " + outTime + " and OU still sucks!"
+    await ctx.send(message)
+    logmessage(ctx, message)
 
 @client.command(name='cc')
 @commands.check(is_admin)
@@ -122,25 +130,6 @@ async def on_command_error(ctx, error):
     else:
         print(error)
 
-"""
-#Look if command is in the database
-@client.event
-async def on_message(message):
-
-    if message.author == client.user:
-        return
-    
-    #Check if they're talking to bot
-    if message.content.startswith('$'):
-        command = message.content.lower()
-        command = command.split(" ", 1)
-
-        #Look if its in the database
-        for instance in session.query(ccCommand).order_by(ccCommand.id):
-            if instance.name == command[0]:
-                await message.channel.send(instance.responce)
-                return
-"""
 
 #Used to automatically update color
 async def on_updatecolor(ctx):
@@ -162,6 +151,10 @@ async def on_updatecolor(ctx):
 
     except Exception as e:
         await ctx.send("Error: " + str(e))
+
+#Logs a message that is sent
+def logmessage(ctx, message):
+    logging.info("Sent message '" + message + "' to " + ctx.channel.name)
 
 
 keyFile = open('keys.txt', 'r')
