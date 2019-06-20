@@ -105,6 +105,7 @@ async def cc(ctx, *args):
         session.delete(victim)
         session.commit()
         await ctx.message.add_reaction('👌')
+        logging.info(ctx.author.nick + "deleted " + victim.name)
 
     #If 2 or more arguments, combine them and modify database
     if len(args) >= 2:
@@ -115,6 +116,7 @@ async def cc(ctx, *args):
         session.commit()
         #await ctx.send("Command " + newCC.name + " with link " + newCC.responce)
         await ctx.message.add_reaction('👌')
+        logging.info(ctx.author.nick + "added " + newCC.name + " with responce " + newCC.responce)
 
 @client.event
 async def on_command_error(ctx, error):
