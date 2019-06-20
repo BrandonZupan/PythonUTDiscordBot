@@ -75,7 +75,7 @@ async def updateicon(ctx, color):
             b = bytearray(f)
             await ctx.guild.edit(icon=b)
             await ctx.channel.send("Icon set to " + color)
-            logging.info("Icon set to " + color + " by " + ctx.author.nick)
+            logging.info("Icon set to " + color + " by " + ctx.author.name)
     #If the file isn't found, then the tower color is probably unknown
     except FileNotFoundError:
         await ctx.send("Error: Unknown tower color.  Options are white, orange, orangewhite, and dark")
@@ -119,7 +119,7 @@ async def cc(ctx, *args):
         session.delete(victim)
         session.commit()
         await ctx.message.add_reaction('👌')
-        logging.info(ctx.author.nick + " deleted " + victim.name)
+        logging.info(ctx.author.name + " deleted " + victim.name)
 
     #If 2 or more arguments, combine them and modify database
     if len(args) >= 2:
@@ -130,7 +130,7 @@ async def cc(ctx, *args):
         session.commit()
         #await ctx.send("Command " + newCC.name + " with link " + newCC.responce)
         await ctx.message.add_reaction('👌')
-        logging.info(ctx.author.nick + " added " + newCC.name + " with responce " + newCC.responce)
+        logging.info(ctx.author.name + " added " + newCC.name + " with responce " + newCC.responce)
 
 @client.event
 async def on_command_error(ctx, error):
