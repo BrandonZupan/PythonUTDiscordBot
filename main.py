@@ -49,6 +49,19 @@ async def is_admin(ctx):
     else:
         return False
 
+async def in_secretChannel(ctx):
+    """Checks if a command was used in a secret channel"""
+    secretChannels = {
+        'ece-torture-dungeon': 508350921403662338,
+        'nitro-commands': 591363307487625227}
+    usedChannel = ctx.channel.id
+    for channel in secretChannels:
+        if secretChannels[channel] == usedChannel:
+            return True
+
+    #It dont exist
+    return False
+
 ##############
 ###Commands###
 ##############
@@ -94,6 +107,7 @@ async def timeCommand(ctx):
 
 @client.command(name='cc', hidden=True)
 @commands.check(is_admin)
+@commands.check(in_secretChannel)
 async def cc(ctx, *args):
     """
     Modifies the command database
