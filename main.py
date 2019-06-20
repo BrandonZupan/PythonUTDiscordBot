@@ -149,6 +149,28 @@ async def modifycommand(ctx, *args):
         nitroCommands[args[0]] = ' '.join(args[1:])
         await ctx.send("Recieved, please wait for moderator to confirm it")
 
+@client.command(name='pending', hidden=True)
+@commands.check(is_admin)
+@commands.check(in_secretChannel)
+async def pending(ctx):
+    """
+    List pending commands sent by nitro users
+
+    List pending: $pending
+    Approve a command: $approve <command_name>
+    Deny a command: $deny <command_name>
+    """
+    message = ""
+
+    #Check if there's pending commands, if so list them
+    if len(nitroCommands) >= 1:
+        for command in nitroCommands:
+            message += command + ": '" + nitroCommands[command] + "' "
+    
+    else:
+        message = "No pending commands"
+    await ctx.send(message)
+
 @client.command(name='approve', hidden=True)
 @commands.check(is_admin)
 @commands.check(in_secretChannel)
@@ -156,7 +178,7 @@ async def approve(ctx, command):
     """
     Approve a command added by a nitro user
 
-    List pending: $pendingcommands
+    List pending: $pending
     Approve a command: $approve <command_name>
     Deny a command: $deny <command_name>
     """
@@ -173,6 +195,8 @@ async def approve(ctx, command):
     #Command not in dict
     else:
         await ctx.send("Error: Command not in queue")
+
+
         
 
 
