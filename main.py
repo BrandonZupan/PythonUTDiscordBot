@@ -125,6 +125,7 @@ async def timeCommand(ctx):
 
 @client.command(name='modifycommand')
 @commands.check(is_nitro)
+@commands.check(in_secretChannel)
 async def modifycommand(ctx, *args):
     """
     Nitro command for modifying the command database
