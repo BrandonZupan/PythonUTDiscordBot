@@ -196,9 +196,24 @@ async def approve(ctx, command):
     else:
         await ctx.send("Error: Command not in queue")
 
+@client.command(name='deny', hidden=True)
+@commands.check(is_admin)
+@commands.check(in_secretChannel)
+async def deny(ctx, command):
+    """
+    Deny a command added by a nitro user
 
-        
-
+    List pending: $pending
+    Approve a command: $approve <command_name>
+    Deny a command: $deny <command_name>
+    """
+    if command in nitroCommands.keys():
+        #Remove from dict
+        del nitroCommands[command]
+        await ctx.message.add_reaction('👌')
+    #Command not in dict
+    else:
+        await ctx.send("Error: Command not in queue")
 
 
 @client.command(name='cc', hidden=True)
