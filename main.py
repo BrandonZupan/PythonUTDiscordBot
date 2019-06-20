@@ -7,7 +7,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
 #SQL Database
-engine = create_engine('sqlite:///responces.db', echo=True)
+engine = create_engine('sqlite:///responces.db', echo=False)
 Base = declarative_base()
 
 class ccCommand(Base):
