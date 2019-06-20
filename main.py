@@ -133,7 +133,7 @@ async def modifycommand(ctx, *args):
     List commands: $modiftycommand
     Modify or create a command: $modifycommand <command_name> <responce>
 
-    Action must be confirmed by a moderator with $confirm <command_name>
+    Action must be confirmed by a moderator with $approve <command_name>
     """
 
     #If zero arguments, list all commands
@@ -148,6 +148,33 @@ async def modifycommand(ctx, *args):
         #Add to nitro database
         nitroCommands[args[0]] = ' '.join(args[1:])
         await ctx.send("Recieved, please wait for moderator to confirm it")
+
+@client.command(name='approve', hidden=True)
+@commands.check(is_admin)
+@commands.check(in_secretChannel)
+async def approve(ctx, command):
+    """
+    Approve a command added by a nitro user
+
+    List pending: $pendingcommands
+    Approve a command: $approve <command_name>
+    Deny a command: $deny <command_name>
+    """
+
+    if command in nitroCommands.keys():
+        #Add it to the database
+        newCC = ccCommand(name=command, responce=nitroCommands[command])
+        session.merge(newCC)
+        session.commit()
+        #Remove from dict
+        del nitroCommands[command]
+        await ctx.message.add_reaction('👌')
+        logging.info(ctx.author.name + " added " + newCC.name + " with responce " + newCC.responce)
+    #Command not in dict
+    else:
+        await ctx.send("Error: Command not in queue")
+        
+
 
 
 @client.command(name='cc', hidden=True)
