@@ -53,7 +53,8 @@ async def in_secretChannel(ctx):
     """Checks if a command was used in a secret channel"""
     secretChannels = {
         'ece-torture-dungeon': 508350921403662338,
-        'nitro-commands': 591363307487625227}
+        'nitro-commands': 591363307487625227
+    }
     usedChannel = ctx.channel.id
     for channel in secretChannels:
         if secretChannels[channel] == usedChannel:
@@ -61,6 +62,19 @@ async def in_secretChannel(ctx):
 
     #It dont exist
     return False
+
+async def is_nitro(ctx):
+    """Checks if a user has Discord Nitro"""
+    #Fake Nitro
+    role = discord.utils.get(ctx.guild.roles, id=591362960232808452)
+    if role in ctx.author.roles:
+        return True
+    #Real Nitro on test server
+    role = discord.utils.get(ctx.guild.roles, id=42)
+    if role in ctx.author.roles:
+        return True
+    else:
+        return False
 
 ##############
 ###Commands###
@@ -104,6 +118,20 @@ async def timeCommand(ctx):
     message = "It is " + outTime + " and OU still sucks!"
     await ctx.send(message)
     logmessage(ctx, message)
+
+@client.command(name='modifycommand')
+@commands.check(is_nitro)
+async def modifycommand(ctx, *args):
+    """
+    Nitro command for modifying the command database
+
+    List commands: $cc
+    Modify or create a command: $cc <command_name> <responce>
+    Delete a command: $cc <command_name>
+
+    Action must be confirmed by a moderator with $confirm <command_name>
+    """
+    await ctx.send("Yeet")
 
 @client.command(name='cc', hidden=True)
 @commands.check(is_admin)
