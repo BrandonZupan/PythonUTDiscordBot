@@ -270,6 +270,15 @@ async def on_command_error(ctx, error):
     else:
         print(error)
 
+#Add reactions to messages in suggestions to allow voting
+@client.event
+async def on_message(ctx):
+    #Check if it was sent to suggestions
+    if ctx.channel.id == 469191877489459220:
+        #reactions = ['thumbsup', 'thumbsdown', 'shrug']
+        await ctx.add_reaction('👍')
+        await ctx.add_reaction('👎')
+        await ctx.add_reaction('🤷')
 
 #Used to automatically update color
 async def on_updatecolor(ctx):
