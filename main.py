@@ -279,6 +279,11 @@ async def on_message(ctx):
         await ctx.add_reaction('👍')
         await ctx.add_reaction('👎')
         await ctx.add_reaction('🤷')
+    #Add an ickycat to anime
+    if ctx.channel.id == 565561419769315328:
+        #ickycat = discord.Emoji()
+        #ickycat.name='ickycat'
+        await ctx.add_reaction('<:ickycat:576983438385741836>')
 
 #Used to automatically update color
 async def on_updatecolor(ctx):
