@@ -25,6 +25,8 @@ async def joinChartGenerator(ctx):
     plt.xlabel("Join Date")
     plt.plot_date(dates, y)    
     plt.locator_params(axis='x', nbins=8)
+    ax = plt.axes()
+    ax.xaxis.set_major_locator(plt.MaxNLocator(4))
     plt.savefig("plot.png")
 
     #Upload to discord
