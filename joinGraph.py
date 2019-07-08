@@ -1,10 +1,6 @@
 import discord
-from discord.ext import commands
 import matplotlib.pyplot as plt
-#import pandas as pd
 
-#Discord client
-client = commands.Bot(command_prefix='$')
 
 async def joinChartGenerator(ctx):
     totalUsers = 0
@@ -33,31 +29,4 @@ async def joinChartGenerator(ctx):
 
     #Upload to discord
     await ctx.send(file=discord.File('plot.png'))
-
-async def is_admin(ctx):
-    #permissions = ctx.message.author.roles
-    role = discord.utils.get(ctx.guild.roles, id=490250496028704768)
-    #Moderator on UT Discord
-    if role in ctx.author.roles:
-        return True
-    #Admin on test server
-    role = discord.utils.get(ctx.guild.roles, id=527944399649243146)
-    if role in ctx.author.roles:
-        return True
-    else:
-        return False
-
-@client.event
-async def on_ready():
-    print('We have logged in as {0.user}'.format(client))
-
-@client.command(name="usergraph")
-async def usergraph(ctx):
-    await joinChartGenerator(ctx)
-
-
-keyFile = open('keys.txt', 'r')
-key = keyFile.read()
-client.run(key)
-
 
