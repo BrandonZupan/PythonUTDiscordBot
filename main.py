@@ -75,7 +75,7 @@ async def is_nitro(ctx):
     if role in ctx.author.roles:
         return True
     #Real Nitro on test server
-    role = discord.utils.get(ctx.guild.roles, id=42)
+    role = discord.utils.get(ctx.guild.roles, id=598292086067953664)
     if role in ctx.author.roles:
         return True
     else:
