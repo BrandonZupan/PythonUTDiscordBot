@@ -91,6 +91,61 @@ async def hello(ctx):
     await ctx.send(message)
     logmessage(ctx, message)
 
+allranks = {
+    'UGS': 591000675203416076, 
+    'Social Work': 469195563267522572, 
+    'Nursing': 469195544154341379, 
+    'Natural Sciences': 469195501749665797, 
+    'Liberal Arts': 469195411098435593, 
+    'Geosciences': 469195394920742943, 
+    'Fine Arts': 469195366932283394, 
+    'Engineering': 469195313547313162, 
+    'Education': 469195286728802314, 
+    'Communication': 469195248913088534, 
+    'Business': 469195224162238464, 
+    'Architecture': 469195103026544642, 
+    'Alumni': 469348087593435136, 
+    'Riverside': 488209904428122112, 
+    'West Campus': 470052478184849408, 
+    'North Campus': 597955125981610008, 
+    'Jester West': 470052452960436235, 
+    'Jester East': 470052427291164672, 
+    'San Jacinto Hall': 470052381233512458, 
+    'Roberts Hall': 470052350065901588, 
+    'Prather Hall': 470052139943854080, 
+    'Moore-Hill Hall': 470052105558818826, 
+    'Creekside Hall': 470052057639026708, 
+    'Brackenridge Hall': 470052017432428546, 
+    'Whitis Court': 470051984939155476, 
+    'Littlefield Hall': 470051934577885194, 
+    'Kinsolving Hall': 470051900016820237, 
+    'Duren Hall': 470051846527123456, 
+    'Carothers Hall': 470051813643649035, 
+    'Blanton Hall': 470051755456200714, 
+    'Andrews Hall': 470051617446690837, 
+    'Prospective Students': 579365237980135425, 
+    'Class of 2023': 469347181409599488, 
+    'Class of 2022': 469347157321973761, 
+    'Class of 2021': 469347128368562197, 
+    'Class of 2020': 469347098173898762, 
+    'Class of 2019': 469347057560322048
+}
+
+@client.command(name='rank')
+async def rank(ctx, newRank):
+    """
+    Assigns a rank/role to a user
+
+    Usage: $rank <school/college>
+
+    View all possible ranks with $ranks
+    """
+    newRankId = discord.Role
+    newRankId.id = allranks[newRank]
+    await ctx.author.add_roles(newRankId, reason="self assigned with Eyes of Texas")
+    await ctx.message.add_reaction('👌')
+
+
 @client.command(name='usergraph', hidden=True)
 @commands.check(is_admin)
 async def usergraph(ctx):
