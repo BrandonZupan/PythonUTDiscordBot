@@ -132,18 +132,26 @@ allranks = {
 }
 
 @client.command(name='rank')
-async def rank(ctx, newRank):
+async def rank(ctx, newRankName):
     """
-    Assigns a rank/role to a user
+    Assigns a rank/role to a user, or deletes it if they already have it
 
     Usage: $rank <school/college>
 
     View all possible ranks with $ranks
     """
-    newRankId = discord.Role
-    newRankId.id = allranks[newRank]
-    await ctx.author.add_roles(newRankId, reason="self assigned with Eyes of Texas")
-    await ctx.message.add_reaction('👌')
+    newRank = discord.utils.get(ctx.guild.roles, id=allranks[newRankName])
+
+    #Check if they already have the role.  If so, delete it.  Else add it
+    if newRank in ctx.author.roles:
+        #If so, delete it
+        await ctx.author.remove_roles(newRank)
+        await ctx.send(f'Removed rank {newRank.name} from {ctx.author.mention}')
+
+    else:
+        #Add it since they don't got it
+        await ctx.author.add_roles(newRank, reason="self assigned with Eyes of Texas")
+        await ctx.message.add_reaction('👌')
 
 
 @client.command(name='usergraph', hidden=True)
