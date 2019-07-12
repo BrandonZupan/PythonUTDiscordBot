@@ -155,11 +155,13 @@ async def rank(ctx, *newRank):
             #If so, delete it
             await ctx.author.remove_roles(newRank)
             await ctx.send(f'Removed rank {newRank.name} from {ctx.author.mention}')
+            logging.info(f'Removed rank {newRank.name} from {ctx.author.mention}')
 
         else:
             #Add it since they don't got it
             await ctx.author.add_roles(newRank, reason="self assigned with Eyes of Texas")
             await ctx.message.add_reaction('👌')
+            logging.info(f'Added rank {newRank.name} to {ctx.author.mention}')
 
 @client.command(name='ranks')
 async def ranks(ctx):
