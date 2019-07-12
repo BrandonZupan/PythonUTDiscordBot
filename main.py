@@ -145,8 +145,10 @@ async def rank(ctx, *newRank):
     else:
         newRankName = ' '.join(newRank)
         newRankName = newRankName.lower()
+        #Establish guild to use
+        utdiscord = client.get_guild(469153450953932800)
         try:
-            newRank = discord.utils.get(ctx.guild.roles, id=allranks[newRankName])
+            newRank = discord.utils.get(utdiscord.roles, id=allranks[newRankName])
         except:
             await ctx.send(f"{newRankName} not found.  Make sure it is typed the same way as in the list of ranks found in `$ranks`")
 
@@ -383,6 +385,21 @@ async def on_message(ctx):
         await ctx.add_reaction('<:ickycat:576983438385741836>')
         return
     await client.process_commands(ctx)
+
+@client.command(name='hellothere')
+async def hellothere(ctx):
+    await ctx.author.send("General Kenobi, you are a bold one")
+
+#Send a PM when someone joins
+@client.event
+async def on_member_join(ctx):
+    newUserMessage = f"Welcome to the UT Austin Discord {ctx.mention}!  Please select which school/college you are in by using `$rank [school/college]`. "
+    newUserMessage += "You can also select your graduating class and where you will be living.  "
+    newUserMessage += "See the list of available schools/colleges, graduating classes, and communities by using `$ranks.` \n"
+    newUserMessage += "If you are having problems joining a rank, please message a member with the 'Founder or Moderator' role.  "
+    newUserMessage += "Be sure to read our rules in #real-rules."
+    await ctx.send(newUserMessage)
+    logging.info(f"Sent PM to {ctx.mention}")
 
 
 #Used to automatically update color
