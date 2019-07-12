@@ -402,7 +402,7 @@ async def on_member_join(ctx):
     newUserMessage += "If you are having problems joining a rank, please message a member with the 'Founder or Moderator' role.  "
     newUserMessage += "Be sure to read our rules in #real-rules."
     await ctx.send(newUserMessage)
-    logging.info(f"Sent PM to {ctx.mention}")
+    logging.info(f"Sent join PM to {ctx.mention}")
 
 
 #Used to automatically update color
