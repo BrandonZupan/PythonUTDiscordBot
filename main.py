@@ -132,7 +132,7 @@ allranks = {
 }
 
 @client.command(name='rank')
-async def rank(ctx, newRankName):
+async def rank(ctx, *newRank):
     """
     Assigns a rank/role to a user, or deletes it if they already have it
 
@@ -140,24 +140,45 @@ async def rank(ctx, newRankName):
 
     View all possible ranks with $ranks
     """
-    newRankName = newRankName.lower()
-    await ctx.send(newRankName)
-    try:
-        newRank = discord.utils.get(ctx.guild.roles, id=allranks[newRankName])
-    except:
-        await ctx.send(f"{newRankName} not found.  Make sure it is typed the same way as in the list of ranks found in `$ranks`")
-
-    #Check if they already have the role.  If so, delete it.  Else add it
-    if newRank in ctx.author.roles:
-        #If so, delete it
-        await ctx.author.remove_roles(newRank)
-        await ctx.send(f'Removed rank {newRank.name} from {ctx.author.mention}')
+    if len(newRank) == 0:
+        await ranks(ctx)
 
     else:
-        #Add it since they don't got it
-        await ctx.author.add_roles(newRank, reason="self assigned with Eyes of Texas")
-        await ctx.message.add_reaction('👌')
+        newRankName = ' '.join(newRank)
+        newRankName = newRankName.lower()
+        try:
+            newRank = discord.utils.get(ctx.guild.roles, id=allranks[newRankName])
+        except:
+            await ctx.send(f"{newRankName} not found.  Make sure it is typed the same way as in the list of ranks found in `$ranks`")
 
+        #Check if they already have the role.  If so, delete it.  Else add it
+        if newRank in ctx.author.roles:
+            #If so, delete it
+            await ctx.author.remove_roles(newRank)
+            await ctx.send(f'Removed rank {newRank.name} from {ctx.author.mention}')
+
+        else:
+            #Add it since they don't got it
+            await ctx.author.add_roles(newRank, reason="self assigned with Eyes of Texas")
+            await ctx.message.add_reaction('👌')
+
+@client.command(name='ranks')
+async def ranks(ctx):
+    """
+    Lists all available ranks
+    """
+    output = ""
+    #Create embed object
+    embed = discord.Embed(title="Ranks", color=0xbf5700)
+
+    #Generate output
+    for role in allranks:
+        discRole = discord.utils.get(ctx.guild.roles, id=allranks[role])
+        members = len(discRole.members)
+        output += f"`{discRole.name} {members} members`\n"
+
+    embed.add_field(name="Join with `$rank name`", value=output, inline=False)
+    await ctx.send(embed=embed)
 
 @client.command(name='usergraph', hidden=True)
 @commands.check(is_admin)
