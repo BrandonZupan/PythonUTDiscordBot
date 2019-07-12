@@ -147,21 +147,22 @@ async def rank(ctx, *newRank):
         newRankName = newRankName.lower()
         #Establish guild to use
         utdiscord = client.get_guild(469153450953932800)
+        utuser = discord.utils.get(utdiscord.members, id=ctx.author.id)
         try:
             newRank = discord.utils.get(utdiscord.roles, id=allranks[newRankName])
         except:
             await ctx.send(f"{newRankName} not found.  Make sure it is typed the same way as in the list of ranks found in `$ranks`")
 
         #Check if they already have the role.  If so, delete it.  Else add it
-        if newRank in ctx.author.roles:
+        if newRank in utuser.roles:
             #If so, delete it
-            await ctx.author.remove_roles(newRank)
+            await utuser.remove_roles(newRank)
             await ctx.send(f'Removed rank {newRank.name} from {ctx.author.mention}')
             logging.info(f'Removed rank {newRank.name} from {ctx.author.mention}')
 
         else:
             #Add it since they don't got it
-            await ctx.author.add_roles(newRank, reason="self assigned with Eyes of Texas")
+            await utuser.add_roles(newRank, reason="self assigned with Eyes of Texas")
             await ctx.message.add_reaction('👌')
             logging.info(f'Added rank {newRank.name} to {ctx.author.mention}')
 
@@ -173,10 +174,12 @@ async def ranks(ctx):
     output = ""
     #Create embed object
     embed = discord.Embed(title="Ranks", color=0xbf5700)
+    #Establish guild to use
+    utdiscord = client.get_guild(469153450953932800)
 
     #Generate output
     for role in allranks:
-        discRole = discord.utils.get(ctx.guild.roles, id=allranks[role])
+        discRole = discord.utils.get(utdiscord.roles, id=allranks[role])
         members = len(discRole.members)
         output += f"`{discRole.name} {members} members`\n"
 
@@ -389,7 +392,7 @@ async def on_message(ctx):
 @client.command(name='hellothere')
 async def hellothere(ctx):
     await ctx.author.send("General Kenobi, you are a bold one")
-
+'''
 #Send a PM when someone joins
 @client.event
 async def on_member_join(ctx):
@@ -400,7 +403,7 @@ async def on_member_join(ctx):
     newUserMessage += "Be sure to read our rules in #real-rules."
     await ctx.send(newUserMessage)
     logging.info(f"Sent PM to {ctx.mention}")
-
+'''
 
 #Used to automatically update color
 async def on_updatecolor(ctx):
