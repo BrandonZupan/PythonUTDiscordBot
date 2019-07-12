@@ -392,18 +392,18 @@ async def on_message(ctx):
 @client.command(name='hellothere')
 async def hellothere(ctx):
     await ctx.author.send("General Kenobi, you are a bold one")
-'''
+
 #Send a PM when someone joins
 @client.event
 async def on_member_join(ctx):
-    newUserMessage = f"Welcome to the UT Austin Discord {ctx.mention}!  Please select which school/college you are in by using `$rank [school/college]`. "
+    newUserMessage = f"Welcome to the UT Austin Discord {ctx.mention}!  Please select which school/college you are in by using `$rank [school/college]` in the #bot-commands channel. "
     newUserMessage += "You can also select your graduating class and where you will be living.  "
     newUserMessage += "See the list of available schools/colleges, graduating classes, and communities by using `$ranks.` \n"
     newUserMessage += "If you are having problems joining a rank, please message a member with the 'Founder or Moderator' role.  "
     newUserMessage += "Be sure to read our rules in #real-rules."
     await ctx.send(newUserMessage)
     logging.info(f"Sent PM to {ctx.mention}")
-'''
+
 
 #Used to automatically update color
 async def on_updatecolor(ctx):
