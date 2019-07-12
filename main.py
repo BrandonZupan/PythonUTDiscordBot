@@ -141,8 +141,7 @@ async def rank(ctx, *newRank):
     View all possible ranks with $ranks
     """
     if len(newRank) == 0:
-        await ranks(ctx)
-
+        await ctx.send("Use `$rank name` to add a rank.  Use `$ranks` to list all ranks")
     else:
         newRankName = ' '.join(newRank)
         newRankName = newRankName.lower()
