@@ -46,6 +46,9 @@ Base.metadata.create_all(postsEngine)   #Posts
 Session = sessionmaker(bind=engine)
 session = Session()
 
+PostsSession = sessionmaker(bind=postsEngine)
+postsDB = PostsSession()
+
 #Discord client
 client = commands.Bot(command_prefix='$')
 
