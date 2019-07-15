@@ -243,6 +243,15 @@ async def hellothere(ctx):
     await ctx.author.send("General Kenobi, you are a bold one")
 
 
+#Requested by John in case he ever needs help
+@client.command(name='john', hidden=True)
+async def john(ctx):
+    """
+    https://youtu.be/Ho1LgF8ys-c
+    """
+    return True
+
+
 @client.command(name='modifycommand')
 @commands.check(is_nitro)
 @commands.check(in_secretChannel)
