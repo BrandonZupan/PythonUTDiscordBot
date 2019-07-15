@@ -13,6 +13,7 @@ logging.basicConfig(level=logging.INFO)
 
 #SQL Database
 engine = create_engine('sqlite:///responces.db', echo=False)
+postsEngine = create_engine(":memory:", echo=True)
 Base = declarative_base()
 
 #Nitro Database, must be approved into SQL
@@ -27,8 +28,19 @@ class ccCommand(Base):
     name = Column(String, primary_key=True)
     responce = Column(String)
 
+class posts(Base):
+    __tablename__ = datetime.now().strftime("%m-%y")
+
+    #Column for name, posts, how many mentions, how many times mentioned, how many posts in anime
+    name = Column(String, primary_key=True)
+    posts = Column(Integer)
+    mentions = Column(Integer)
+    mentioned = Column(Integer)
+    animePosts = Column(Integer)
+
 #Create the Table   
-Base.metadata.create_all(engine)
+Base.metadata.create_all(engine)    #Commands
+Base.metadata.create_all(postsEngine)   #Posts
 
 #Start the SQL session
 Session = sessionmaker(bind=engine)
