@@ -208,12 +208,12 @@ async def updateicon(ctx, color):
     """
     Updates the server icon
     
-    Color options are orange, orangewhite, white, dark, or auto
+    Color options are orange, orangewhite, white, dark, attackmode, or auto
     """
     if color == 'auto':
         color = await on_updatecolor(ctx)
     try:
-        with open(color + ".png", "rb") as image:
+        with open("icons/" + color + ".png", "rb") as image:
             f = image.read()
             b = bytearray(f)
             await ctx.guild.edit(icon=b)
