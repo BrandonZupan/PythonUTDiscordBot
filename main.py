@@ -41,6 +41,12 @@ client = commands.Bot(command_prefix='$')
 async def on_ready():
     print('We have logged in as {0.user}'.format(client))
 
+
+############
+###Checks###
+############
+
+
 async def is_admin(ctx):
     #permissions = ctx.message.author.roles
     role = discord.utils.get(ctx.guild.roles, id=490250496028704768)
@@ -81,15 +87,18 @@ async def is_nitro(ctx):
     else:
         return False
 
+
 ##############
 ###Commands###
 ##############
+
 
 @client.command(name='hello')
 async def hello(ctx):
     message = "Hello " + str(ctx.author).split('#')[0] + '!'
     await ctx.send(message)
     logmessage(ctx, message)
+
 
 allranks = {
     'ugs': 591000675203416076, 
@@ -186,10 +195,12 @@ async def ranks(ctx):
     embed.add_field(name="Join with `$rank name`", value=output, inline=False)
     await ctx.send(embed=embed)
 
+
 @client.command(name='usergraph', hidden=True)
 @commands.check(is_admin)
 async def usergraph(ctx):
     await joinChartGenerator(ctx)
+
 
 @client.command(name='updateicon', hidden=True)
 @commands.check(is_admin)
@@ -212,9 +223,11 @@ async def updateicon(ctx, color):
     except FileNotFoundError:
         await ctx.send("Error: Unknown tower color.  Options are white, orange, orangewhite, and dark")
 
+
 @client.command(name='score')
 async def score(ctx):
     await ctx.send("Texas beat OU 48 to 45 in the Red River Rivalry with a last second field goal by Dicker the Kicker! :metal:")
+
 
 @client.command(name='time')
 async def timeCommand(ctx):
@@ -223,6 +236,12 @@ async def timeCommand(ctx):
     message = "It is " + outTime + " and OU still sucks!"
     await ctx.send(message)
     logmessage(ctx, message)
+
+
+@client.command(name='hellothere')
+async def hellothere(ctx):
+    await ctx.author.send("General Kenobi, you are a bold one")
+
 
 @client.command(name='modifycommand')
 @commands.check(is_nitro)
@@ -356,6 +375,7 @@ async def cc(ctx, *args):
         await ctx.message.add_reaction('👌')
         logging.info(ctx.author.name + " added " + newCC.name + " with responce " + newCC.responce)
 
+
 @client.event
 async def on_command_error(ctx, error):
     if isinstance(error, commands.errors.CommandNotFound):
@@ -370,6 +390,7 @@ async def on_command_error(ctx, error):
                 return
     else:
         print(error)
+
 
 #Add reactions to messages in suggestions to allow voting
 @client.event
@@ -389,9 +410,6 @@ async def on_message(ctx):
         return
     await client.process_commands(ctx)
 
-@client.command(name='hellothere')
-async def hellothere(ctx):
-    await ctx.author.send("General Kenobi, you are a bold one")
 
 #Send a PM when someone joins
 @client.event
@@ -426,9 +444,11 @@ async def on_updatecolor(ctx):
     except Exception as e:
         await ctx.send("Error: " + str(e))
 
+
 #Logs a message that is sent
 def logmessage(ctx, message):
     logging.info("Sent message '" + message + "' to " + ctx.channel.name)
+
 
 
 keyFile = open('keys.txt', 'r')
