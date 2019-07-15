@@ -13,7 +13,7 @@ logging.basicConfig(level=logging.INFO)
 
 #SQL Database
 engine = create_engine('sqlite:///responces.db', echo=False)
-postsEngine = create_engine(":memory:", echo=True)
+postsEngine = create_engine("sqlite:///:memory:", echo=True)
 Base = declarative_base()
 
 #Nitro Database, must be approved into SQL
