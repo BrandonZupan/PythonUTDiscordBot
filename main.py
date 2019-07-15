@@ -218,6 +218,26 @@ async def usergraph(ctx):
     await joinChartGenerator(ctx)
 
 
+@client.command(name='userstats', hidden=True)
+@commands.check(is_admin)
+@commands.check(in_secretChannel)
+async def userstats(ctx, user):
+    """
+    Returns stats about the user, such as amount of monthly posts
+    Usage: $userstats @user
+    """
+    found = False
+    for instance in postsDB.query(posts).order_by(posts.name):
+        if instance.name == user:
+            authorEntry = instance
+            found = True
+            break
+
+    if found == True:
+        await ctx.send(f"{user} has {str(authorEntry.posts)} total posts and {str(authorEntry.animePosts)} posts in #anime this month")
+    else:
+        await ctx.send("User not found or has not posted yet this month")
+
 @client.command(name='updateicon', hidden=True)
 @commands.check(is_admin)
 async def updateicon(ctx, color):
@@ -456,7 +476,7 @@ async def on_message(ctx):
 
     postsDB.merge(authorEntry)
     postsDB.commit()
-    print(f"{authorEntry.name} has {str(authorEntry.posts)} posts total, and {str(authorEntry.animePosts)} posts in anime")
+    #print(f"{authorEntry.name} has {str(authorEntry.posts)} posts total, and {str(authorEntry.animePosts)} posts in anime")
 
     await client.process_commands(ctx)
 
