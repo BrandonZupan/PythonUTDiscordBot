@@ -38,6 +38,7 @@ class posts(Base):
     mentioned = Column(Integer)
     animePosts = Column(Integer)
 
+
 #Create the Table   
 Base.metadata.create_all(engine)    #Commands
 Base.metadata.create_all(postsEngine)   #Posts
@@ -416,10 +417,10 @@ async def on_command_error(ctx, error):
         print(error)
 
 
-#Add reactions to messages in suggestions to allow voting
+
 @client.event
 async def on_message(ctx):
-    #Check if it was sent to suggestions
+    #Add voting to suggestions channel
     if ctx.channel.id == 469191877489459220:
         #reactions = ['thumbsup', 'thumbsdown', 'shrug']
         await ctx.add_reaction('👍')
@@ -432,6 +433,29 @@ async def on_message(ctx):
         #ickycat.name='ickycat'
         await ctx.add_reaction('<:ickycat:576983438385741836>')
         return
+
+    #Track messages and add stuff to database
+    authorname = f"{ctx.author.name}#{ctx.author.discriminator}"
+    print(authorname)
+
+    #Look if its in the database
+    found = False
+    for instance in postsDB.query(posts).order_by(posts.name):
+        if instance.name == authorname:
+            authorEntry = instance
+            found = True
+            break
+
+    if found == True:
+        authorEntry.posts += 1
+
+    else:
+        authorEntry = posts(name=authorname, posts=1)
+
+    postsDB.merge(authorEntry)
+    postsDB.commit()
+    print(f"{authorEntry.name} has {str(authorEntry.posts)} posts")
+
     await client.process_commands(ctx)
 
 
