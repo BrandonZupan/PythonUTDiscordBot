@@ -13,7 +13,7 @@ logging.basicConfig(level=logging.INFO)
 
 #SQL Database
 engine = create_engine('sqlite:///responces.db', echo=False)
-postsEngine = create_engine("sqlite:///:memory:", echo=True)
+postsEngine = create_engine("sqlite:///posts.db", echo=False)
 Base = declarative_base()
 
 #Nitro Database, must be approved into SQL
@@ -432,11 +432,9 @@ async def on_message(ctx):
         #ickycat = discord.Emoji()
         #ickycat.name='ickycat'
         await ctx.add_reaction('<:ickycat:576983438385741836>')
-        return
 
     #Track messages and add stuff to database
-    authorname = f"{ctx.author.name}#{ctx.author.discriminator}"
-    print(authorname)
+    authorname = ctx.author.mention
 
     #Look if its in the database
     found = False
@@ -450,11 +448,15 @@ async def on_message(ctx):
         authorEntry.posts += 1
 
     else:
-        authorEntry = posts(name=authorname, posts=1)
+        authorEntry = posts(name=authorname, posts=1, animePosts=0, mentions=0, mentioned=0)
+
+    #Check if it was posted in anime
+    if ctx.channel.id == 565561419769315328:
+        authorEntry.animePosts += 1
 
     postsDB.merge(authorEntry)
     postsDB.commit()
-    print(f"{authorEntry.name} has {str(authorEntry.posts)} posts")
+    print(f"{authorEntry.name} has {str(authorEntry.posts)} posts total, and {str(authorEntry.animePosts)} posts in anime")
 
     await client.process_commands(ctx)
 
