@@ -1,6 +1,6 @@
 import discord
 import twitterColorDetection
-import datetime
+from datetime import datetime
 from discord.ext import commands
 from sqlalchemy import create_engine, Column, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
@@ -231,7 +231,7 @@ async def score(ctx):
 
 @client.command(name='time')
 async def timeCommand(ctx):
-    currentDT = datetime.datetime.now()
+    currentDT = datetime.now()
     outTime = currentDT.strftime("%I:%M %p")
     message = "It is " + outTime + " and OU still sucks!"
     await ctx.send(message)
