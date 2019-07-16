@@ -288,7 +288,7 @@ async def degenerates(ctx):
     
     #Get the total anime posts
     for person in userPosts:
-        totalAnime += userPosts[person]
+        totalAnime += person[1]
 
     embed.add_field(name="Posts in #anime", value=output, inline=False)
     totalAnimeMessage = f"{str(totalAnime)} total posts made in #anime"
