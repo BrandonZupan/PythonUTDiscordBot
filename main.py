@@ -268,6 +268,9 @@ async def userstats(ctx, *user):
 @commands.check(is_admin)
 @commands.check(in_secretChannel)
 async def degenerates(ctx):
+    """
+    Returns a list of the top anime posters
+    """
     userPosts = {}
     for instance in postsDB.query(posts).order_by(posts.name):
         userPosts[instance.name] = instance.animePosts
@@ -280,11 +283,16 @@ async def degenerates(ctx):
     try:
         for person in userPosts[:10]:
             output += f"{str(person[0])} - {str(person[1])} posts\n"
-            totalAnime += person[1]
     except:
         print("10 users haven't posted yet")
+    
+    #Get the total anime posts
+    for person in userPosts:
+        totalAnime += userPosts[person]
 
-    embed.add_field(name="Total Posts", value=output, inline=False)
+    embed.add_field(name="Posts in #anime", value=output, inline=False)
+    totalAnimeMessage = f"{str(totalAnime)} total posts made in #anime"
+    embed.add_field(name="Collective degeneracy", value=totalAnimeMessage, inline=False)
     await ctx.send(embed=embed)
 
     #This is getting out of hand
