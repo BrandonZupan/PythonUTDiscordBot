@@ -225,14 +225,17 @@ async def userstats(ctx, *user):
     """
     Returns stats about the user, such as amount of monthly posts
     Usage: $userstats @user
-    No user will return the top posters
+    Not inputting a user will return the top posters
     """
     if len(user) == 0:
         #Put users into dictionary
         userPosts = {}
+
+        #Iterate through database
         for instance in postsDB.query(posts).order_by(posts.name):
             userPosts[instance.name] = instance.posts
 
+        #Sort by amount of posts
         userPosts = sorted(userPosts.items(), key=lambda x: x[1], reverse=True)
 
         output = ""
@@ -259,6 +262,35 @@ async def userstats(ctx, *user):
             await ctx.send(f"{user} has {str(authorEntry.posts)} total posts and {str(authorEntry.animePosts)} posts in #anime this month")
         else:
             await ctx.send("User not found or has not posted yet this month")
+
+
+@client.command(name='degenerates', hidden=True)
+@commands.check(is_admin)
+@commands.check(in_secretChannel)
+async def degenerates(ctx):
+    userPosts = {}
+    for instance in postsDB.query(posts).order_by(posts.name):
+        userPosts[instance.name] = instance.animePosts
+
+    userPosts = sorted(userPosts.items(), key=lambda x: x[1], reverse=True)
+
+    totalAnime = 0
+    output = ""
+    embed = discord.Embed(title="Degeneracy per User this Month", color=0xbf5700)
+    try:
+        for person in userPosts[:10]:
+            output += f"{str(person[0])} - {str(person[1])} posts\n"
+            totalAnime += person[1]
+    except:
+        print("10 users haven't posted yet")
+
+    embed.add_field(name="Total Posts", value=output, inline=False)
+    await ctx.send(embed=embed)
+
+    #This is getting out of hand
+    if totalAnime > 100:
+        ctx.send("https://tenor.com/WmUi.gif")
+
 
 @client.command(name='updateicon', hidden=True)
 @commands.check(is_admin)
