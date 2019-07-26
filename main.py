@@ -153,7 +153,8 @@ allranks = {
     'class of 2022': 469347157321973761, 
     'class of 2021': 469347128368562197, 
     'class of 2020': 469347098173898762, 
-    'class of 2019': 469347057560322048
+    'class of 2019': 469347057560322048,
+    'gamer': 546120502314532910
 }
 
 @client.command(name='rank')
@@ -513,7 +514,12 @@ async def on_message(ctx):
     if ctx.channel.id == 565561419769315328:
         #ickycat = discord.Emoji()
         #ickycat.name='ickycat'
-        await ctx.add_reaction('<:ickycat:576983438385741836>')
+        #await ctx.add_reaction('<:ickycat:576983438385741836>')
+
+        #its now an uwu instead of ickycat
+        await ctx.add_reaction('🇺')
+        await ctx.add_reaction('🇼')
+        await ctx.add_reaction('<:anotheruforuwu:604139855802531848>')
 
     #Track messages and add stuff to database
     authorname = ctx.author.mention
