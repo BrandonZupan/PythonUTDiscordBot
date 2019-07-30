@@ -509,6 +509,10 @@ async def on_message(ctx):
         await ctx.add_reaction('👍')
         await ctx.add_reaction('👎')
         await ctx.add_reaction('🤷')
+
+    #Oman at oman
+    if ('oman' in ctx.content):
+        await ctx.add_reaction('🇴🇲')
         
     #Add an ickycat to anime
     if (ctx.channel.id == 565561419769315328):
