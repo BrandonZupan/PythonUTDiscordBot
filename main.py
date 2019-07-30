@@ -511,15 +511,16 @@ async def on_message(ctx):
         await ctx.add_reaction('🤷')
         return
     #Add an ickycat to anime
-    if ctx.channel.id == 565561419769315328:
-        #ickycat = discord.Emoji()
-        #ickycat.name='ickycat'
-        #await ctx.add_reaction('<:ickycat:576983438385741836>')
+    if (ctx.channel.id == 565561419769315328):
+        if ((ctx.attachments) or ('http://' in ctx.content) or ('https://' in ctx.content)):
+            #ickycat = discord.Emoji()
+            #ickycat.name='ickycat'
+            #await ctx.add_reaction('<:ickycat:576983438385741836>')
 
-        #its now an uwu instead of ickycat
-        await ctx.add_reaction('🇺')
-        await ctx.add_reaction('🇼')
-        await ctx.add_reaction('<:anotheruforuwu:604139855802531848>')
+            #its now an uwu instead of ickycat
+            await ctx.add_reaction('🇺')
+            await ctx.add_reaction('🇼')
+            await ctx.add_reaction('<:anotheruforuwu:604139855802531848>')
 
     #Track messages and add stuff to database
     authorname = ctx.author.mention
