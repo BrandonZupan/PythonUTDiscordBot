@@ -509,7 +509,7 @@ async def on_message(ctx):
         await ctx.add_reaction('👍')
         await ctx.add_reaction('👎')
         await ctx.add_reaction('🤷')
-        return
+        
     #Add an ickycat to anime
     if (ctx.channel.id == 565561419769315328):
         if ((ctx.attachments) or ('http://' in ctx.content) or ('https://' in ctx.content)):
