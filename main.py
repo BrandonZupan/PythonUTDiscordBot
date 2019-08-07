@@ -512,7 +512,14 @@ async def on_message(ctx):
         await ctx.add_reaction('🤷')
 
     #Oman at oman
-    if ('oman' in ctx.content):
+    message = ctx.content
+    message = message.lower()
+
+    if (' oman' in message):
+        await ctx.add_reaction('🇴🇲')
+    elif (message[0:5] == 'oman '):
+        await ctx.add_reaction('🇴🇲')
+    elif (message[0:4] == 'oman'):
         await ctx.add_reaction('🇴🇲')
         
     #Add an ickycat to anime
