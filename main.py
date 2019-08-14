@@ -6,6 +6,7 @@ from sqlalchemy import create_engine, Column, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 import logging
+import netifaces as ni
 from joinGraph import joinChartGenerator
 
 #Start logging
@@ -115,6 +116,15 @@ async def hello(ctx):
     await ctx.send(message)
     logmessage(ctx, message)
 
+
+@client.command(name='ip', hidden=True)
+@commands.check(is_admin)
+async def get_ip(ctx):
+    try:
+        IP = ni.ifaddresses('eno1')[ni.AF_INET][0]['addr']
+        await ctx.send(f"Ethernet Address: {str(IP)}")
+    except:
+        await ctx.send("Brandon your code is stupid this didn't work")
 
 allranks = {
     'ugs': 591000675203416076, 
