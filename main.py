@@ -8,6 +8,7 @@ from sqlalchemy.orm import sessionmaker
 import logging
 import netifaces as ni
 from joinGraph import joinChartGenerator
+import subprocess
 
 #Start logging
 logging.basicConfig(level=logging.INFO)
@@ -104,6 +105,11 @@ async def is_nitro(ctx):
     else:
         return False
 
+async def is_brandon(ctx):
+    """Checks if I ran this"""
+    brandon = discord.utils.get(ctx.guild.members, id=158062741112881152)
+    return brandon == ctx.author
+
 
 ##############
 ###Commands###
@@ -121,10 +127,25 @@ async def hello(ctx):
 @commands.check(is_admin)
 async def get_ip(ctx):
     try:
-        IP = ni.ifaddresses('eno1')[ni.AF_INET][0]['addr']
-        await ctx.send(f"Ethernet Address: {str(IP)}")
+        EthIP = ni.ifaddresses('eno1')[ni.AF_INET][0]['addr']
+        #await ctx.send(f"Ethernet Address: {str(IP)}")
     except:
-        await ctx.send("Brandon your code is stupid this didn't work")
+        EthIP = -1
+    try:
+        VPNIP = ni.ifaddresses('tun0')[ni.AF_INET][0]['addr']
+    except: 
+        VPNIP = -1
+    
+    await ctx.send(f"Ethernet Address: {str(EthIP)}\nVPN Address: {str(VPNIP)}")
+
+
+@client.command(name='startvpn', hidden=True)
+@commands.check(is_brandon)
+async def startvpn(ctx):
+    await ctx.send("Attempting to start vpn, wish me luck")
+    subprocess.run("/home/brandon/startvpn.sh")
+
+
 
 allranks = {
     'ugs': 591000675203416076, 
