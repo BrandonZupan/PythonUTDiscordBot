@@ -123,9 +123,12 @@ async def hello(ctx):
     logmessage(ctx, message)
 
 
-@client.command(name='ip', hidden=True)
-@commands.check(is_admin)
+@client.command(name='ip')
+#@commands.check(is_admin)
 async def get_ip(ctx):
+    """
+    Provides the local IP's of the server
+    """
     try:
         EthIP = ni.ifaddresses('eno1')[ni.AF_INET][0]['addr']
         #await ctx.send(f"Ethernet Address: {str(IP)}")
@@ -136,7 +139,7 @@ async def get_ip(ctx):
     except: 
         VPNIP = -1
     
-    await ctx.send(f"Ethernet Address: {str(EthIP)}\nVPN Address: {str(VPNIP)}")
+    await ctx.send(f"Ethernet Address: {str(EthIP)}\nVPN Address (Minecraft IP on UT Network): {str(VPNIP)}")
 
 
 @client.command(name='startvpn', hidden=True)
