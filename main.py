@@ -138,8 +138,9 @@ async def get_ip(ctx):
         VPNIP = ni.ifaddresses('tun0')[ni.AF_INET][0]['addr']
     except: 
         VPNIP = -1
-    
-    await ctx.send(f"Ethernet Address: {str(EthIP)}\nVPN Address (Minecraft IP on UT Network): {str(VPNIP)}")
+    message = f"Ethernet Address: {str(EthIP)}\nVPN Address (Minecraft IP on UT Network): {str(VPNIP)}"
+    message += "\nNote: If VPN Address is -1, ping brandonforty2 so he can turn it on"
+    await ctx.send(message)
 
 
 @client.command(name='startvpn', hidden=True)
