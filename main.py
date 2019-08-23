@@ -63,6 +63,9 @@ class SportsTracking(commands.Cog):
     async def cogtest(self, ctx):
         await ctx.send("Hello world!")
 
+    #Create function that takes in 2 scores and makes an icon
+    
+
 client.add_cog(SportsTracking(client))
 
 @client.event
