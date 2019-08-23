@@ -55,6 +55,16 @@ postsDB = PostsSession()
 #Discord client
 client = commands.Bot(command_prefix='$')
 
+class SportsTracking(commands.Cog):
+    def __init__(self, bot):
+        self.bot = bot
+
+    @commands.command()
+    async def cogtest(self, ctx):
+        await ctx.send("Hello world!")
+
+client.add_cog(SportsTracking(client))
+
 @client.event
 async def on_ready():
     print('We have logged in as {0.user}'.format(client))
