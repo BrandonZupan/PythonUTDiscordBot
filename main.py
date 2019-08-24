@@ -60,7 +60,7 @@ postsDB = PostsSession()
 client = commands.Bot(command_prefix='$')
 
 class SportsTracking(commands.Cog):
-    def __init__(self, bot, game_id, is_home):
+    def __init__(self, bot):
         self.bot = bot
         self.game = None
 
@@ -68,12 +68,16 @@ class SportsTracking(commands.Cog):
     #If there's an update, change the icon
     #Send current score to a channel
     #Check if game is finished, if it is, stop the routine
+
     @commands.command()
-    async def sports_icon_updater(self, ctx, game_id):
-        self.game = sports_tracking.Score(game_id, True)
+    @commands.check(is_admin)
+    async def sports_icon_updater(self, ctx, game_id, is_home):
+        """Starts the sports tracking"""
+        self.game = sports_tracking.Score(game_id, is_home)
         self.score_loop.start()
 
     @commands.command()
+    @commands.check(is_admin)
     async def stop_loop(self, ctx):
         self.score_loop.cancel()
 
