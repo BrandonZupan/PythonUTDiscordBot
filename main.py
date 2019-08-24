@@ -9,6 +9,9 @@ import logging
 import netifaces as ni
 from joinGraph import joinChartGenerator
 import subprocess
+import aiohttp
+import bs4
+from PIL import Image, ImageFont, ImageDraw
 
 #Start logging
 logging.basicConfig(level=logging.INFO)
@@ -56,8 +59,59 @@ postsDB = PostsSession()
 client = commands.Bot(command_prefix='$')
 
 class SportsTracking(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot, game_id, is_home):
         self.bot = bot
+        self.game_id = game_id
+        self.is_home = is_home
+        self.longhorn_score = None
+        self.enemy_score = None
+        self.game_status = None
+
+    async def fetch_score_html(self, session, id):
+        """Updates the score from ESPN"""
+        url = f'http://www.espn.com/college-football/game/_/gameId/{id}'
+        async with session.get(url) as responce:
+            return await responce.text()
+
+    async def update_score(self):
+        """Updates score from ESPN"""
+        async with aiohttp.ClientSession() as session:
+            html = await self.fetch_score_html(session, self.game_id)
+
+        soup = bs4.BeautifulSoup(html, features='html.parser')
+
+        homeScoreContainer = soup.findAll("div", {"class": "score icon-font-before"})
+        awayScoreContainer = soup.findAll("div", {"class": "score icon-font-after"})
+        status_container = soup.findAll("div", {"class": "game-status"})
+
+        self.game_status = status_container[0].getText()
+
+        if self.is_home == True:
+            self.longhorn_score = homeScoreContainer[0].getText()
+            self.enemy_score = awayScoreContainer[0].getText()
+        else:
+            self.longhorn_score = awayScoreContainer[0].getText()
+            self.enemy_score = homeScoreContainer[0].getText()
+
+    def icon_generator(self):
+        """
+        Generates an icon for the discord server
+        Inputs: 2 scores
+        Output: Path to new icon
+        """
+
+        im = Image.open("icontemplate.png")
+        draw = ImageDraw.Draw(im)
+
+        font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 150)
+
+        #Longhorn score
+        draw.text((260, 64), str(self.longhorn_score), (255,255,255), font=font)
+        #Loser score
+        draw.text((260, 264), str(self.enemy_score), (255,255,255), font=font)
+        im.save('sample-out.png')
+
+        return 'sample-out.png'
 
     @commands.command()
     async def cogtest(self, ctx):
