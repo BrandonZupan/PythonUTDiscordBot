@@ -73,12 +73,22 @@ class SportsTracking(commands.Cog):
         self.game = sports_tracking.Score(game_id, True)
         self.score_loop.start()
 
+    @commands.command()
+    async def stop_loop(self, ctx):
+        self.score_loop.cancel()
+
     @tasks.loop(minutes=5)
     async def score_loop(self):
+        #Update score
         self.game.update_score()
-        icon_path = self.game.icon_generator()
-        guild = client.get_guild(505932838223347713)
+        channel = client.get_channel(614935782628786207)
+        await channel.send(f"Home: {self.game.longhorn_score}, Away: {self.game.enemy_score}")
 
+        #Generate icon
+        icon_path = self.game.icon_generator()
+
+        #Update icon on test server
+        guild = client.get_guild(505932838223347713)
         with open(icon_path) as image:
             f = image.read()
             b = bytearray(f)
@@ -88,6 +98,7 @@ class SportsTracking(commands.Cog):
         if self.game.game_status[0:5] == "FINAL":
             #Game is finished, stopped updating
             logging.info("Game over, stopping")
+            await channel.send(f"Game over, final score is {self.game.longhorn_score} - {self.game.enemy_score}")
             self.score_loop.cancel()
 
 
@@ -95,7 +106,6 @@ class SportsTracking(commands.Cog):
     async def cogtest(self, ctx):
         await ctx.send("Hello world!")
 
-    #Create function that takes in 2 scores and makes an icon
     
 
 client.add_cog(SportsTracking(client))
