@@ -59,66 +59,6 @@ postsDB = PostsSession()
 #Discord client
 client = commands.Bot(command_prefix='$')
 
-class SportsTracking(commands.Cog):
-    def __init__(self, bot):
-        self.bot = bot
-        self.game = None
-
-    #Make it check every 5 minutes for score updates
-    #If there's an update, change the icon
-    #Send current score to a channel
-    #Check if game is finished, if it is, stop the routine
-
-    @commands.command()
-    @commands.check(is_admin)
-    async def sports_icon_updater(self, ctx, game_id, is_home):
-        """Starts the sports tracking"""
-        self.game = sports_tracking.Score(game_id, is_home)
-        self.score_loop.start()
-
-    @commands.command()
-    @commands.check(is_admin)
-    async def stop_loop(self, ctx):
-        self.score_loop.cancel()
-
-    @tasks.loop(minutes=5)
-    async def score_loop(self):
-        #Update score
-        self.game.update_score()
-        channel = client.get_channel(614935782628786207)
-        await channel.send(f"Home: {self.game.longhorn_score}, Away: {self.game.enemy_score}")
-
-        #Generate icon
-        icon_path = self.game.icon_generator()
-
-        #Update icon on test server
-        guild = client.get_guild(505932838223347713)
-        with open(icon_path) as image:
-            f = image.read()
-            b = bytearray(f)
-            await guild.edit(icon=b)
-            logging.info("Updated score icon")
-
-        if self.game.game_status[0:5] == "FINAL":
-            #Game is finished, stopped updating
-            logging.info("Game over, stopping")
-            await channel.send(f"Game over, final score is {self.game.longhorn_score} - {self.game.enemy_score}")
-            self.score_loop.cancel()
-
-
-    @commands.command()
-    async def cogtest(self, ctx):
-        await ctx.send("Hello world!")
-
-    
-
-client.add_cog(SportsTracking(client))
-
-@client.event
-async def on_ready():
-    print('We have logged in as {0.user}'.format(client))
-
-
 ############
 ###Checks###
 ############
@@ -168,6 +108,74 @@ async def is_brandon(ctx):
     """Checks if I ran this"""
     brandon = discord.utils.get(ctx.guild.members, id=158062741112881152)
     return brandon == ctx.author
+
+
+class SportsTracking(commands.Cog):
+    def __init__(self, bot):
+        self.bot = bot
+        self.game = None
+
+    #Make it check every 5 minutes for score updates
+    #If there's an update, change the icon
+    #Send current score to a channel
+    #Check if game is finished, if it is, stop the routine
+
+    @commands.command(name='footballmode')
+    @commands.check(is_admin)
+    async def sports_icon_updater(self, ctx, game_id, is_home):
+        """
+        Starts the sports tracking
+        Inputs: ESPN Game ID, boolean for if home game (1 = home, 0 = away)
+        Stop with stopfootball
+        """
+        self.game = sports_tracking.Score(int(game_id), int(is_home))
+        self.score_loop.start()
+        logging.info("Started football mode")
+
+    @commands.command(name='stopfootball')
+    @commands.check(is_admin)
+    async def stop_loop(self, ctx):
+        self.score_loop.cancel()
+        logging.info("Stopping football mode")
+
+    @tasks.loop(minutes=5)
+    async def score_loop(self):
+        #Update score
+        await self.game.update_score()
+        channel = client.get_channel(614935782628786207)
+        await channel.send(f"Home: {self.game.longhorn_score}, Away: {self.game.enemy_score}")
+
+        #Generate icon
+        icon_path = self.game.icon_generator()
+        """
+        #Update icon on test server
+        guild = client.get_guild(505932838223347713)
+        with open(icon_path) as image:
+            f = image.read()
+            b = bytearray(f)
+            await guild.edit(icon=b)
+            logging.info("Updated score icon")
+        """
+        if self.game.game_status[0:5] == "FINAL":
+            #Game is finished, stopped updating
+            logging.info("Game over, stopping")
+            await channel.send(f"Game over, final score is {self.game.longhorn_score} - {self.game.enemy_score}")
+            self.score_loop.cancel()
+        
+
+    @commands.command()
+    async def cogtest(self, ctx):
+        await ctx.send("Hello world!")
+
+    
+
+client.add_cog(SportsTracking(client))
+
+@client.event
+async def on_ready():
+    print('We have logged in as {0.user}'.format(client))
+
+
 
 
 ##############
