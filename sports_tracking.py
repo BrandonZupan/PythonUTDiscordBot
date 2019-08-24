@@ -15,7 +15,7 @@ class Score():
         self.is_home = is_home
         self.longhorn_score = None
         self.enemy_score = None
-        self.game_over = False
+        self.game_status = None
 
     async def fetch_score_html(self, session, id):
         """Updates the score from ESPN"""
@@ -32,6 +32,9 @@ class Score():
 
         homeScoreContainer = soup.findAll("div", {"class": "score icon-font-before"})
         awayScoreContainer = soup.findAll("div", {"class": "score icon-font-after"})
+        status_container = soup.findAll("div", {"class": "game-status"})
+
+        self.game_status = status_container[0].getText()
 
         if self.is_home == True:
             self.longhorn_score = homeScoreContainer[0].getText()
@@ -63,10 +66,11 @@ def icon_generator(score1, score2):
 async def main():
     red_river = Score(401012739, True)
     await red_river.update_score()
-    print(f"Longhorn: {red_river.longhorn_score}, OU: {red_river.enemy_score}")
+    #print(f"Longhorn: {red_river.longhorn_score}, OU: {red_river.enemy_score}")
+    print(red_river.game_status)
 
-    icon_path = icon_generator(red_river.longhorn_score, red_river.enemy_score)
-    print(icon_path)
+    #icon_path = icon_generator(red_river.longhorn_score, red_river.enemy_score)
+    #print(icon_path)
 
 loop = asyncio.get_event_loop()
 loop.run_until_complete(main())
