@@ -43,34 +43,34 @@ class Score():
             self.longhorn_score = awayScoreContainer[0].getText()
             self.enemy_score = homeScoreContainer[0].getText()
 
-def icon_generator(score1, score2):
-    """
-    Generates an icon for the discord server
-    Inputs: 2 scores
-    Output: Path to new icon
-    """
+    def icon_generator(self):
+        """
+        Generates an icon for the discord server
+        Inputs: 2 scores
+        Output: Path to new icon
+        """
 
-    im = Image.open("icontemplate.png")
-    draw = ImageDraw.Draw(im)
+        im = Image.open("icontemplate.png")
+        draw = ImageDraw.Draw(im)
 
-    font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 150)
+        font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 150)
 
-    #Longhorn score
-    draw.text((260, 64), str(score1), (255,255,255), font=font)
-    #Loser score
-    draw.text((260, 264), str(score2), (255,255,255), font=font)
-    im.save('sample-out.png')
+        #Longhorn score
+        draw.text((260, 64), str(self.longhorn_score), (255,255,255), font=font)
+        #Loser score
+        draw.text((260, 264), str(self.enemy_score), (255,255,255), font=font)
+        im.save('sample-out.png')
 
-    return 'sample-out.png'
+        return 'sample-out.png'
 
 async def main():
-    red_river = Score(401012739, True)
+    red_river = Score(401110723, True)
     await red_river.update_score()
     #print(f"Longhorn: {red_river.longhorn_score}, OU: {red_river.enemy_score}")
     print(red_river.game_status)
 
-    #icon_path = icon_generator(red_river.longhorn_score, red_river.enemy_score)
-    #print(icon_path)
+    icon_path = red_river.icon_generator()
+    print(icon_path)
 
 loop = asyncio.get_event_loop()
 loop.run_until_complete(main())
