@@ -4,7 +4,41 @@ Brandon Zupan
 Holds functions that deal with aquiring sports scores and generating a discord icon
 """
 
+import asyncio
+import aiohttp
+import bs4
 from PIL import Image, ImageFont, ImageDraw
+
+class Score():
+    def __init__(self, game_id, is_home):
+        self.game_id = game_id
+        self.is_home = is_home
+        self.longhorn_score = None
+        self.enemy_score = None
+        self.game_over = False
+
+    async def fetch_score_html(self, session, id):
+        """Updates the score from ESPN"""
+        url = f'http://www.espn.com/college-football/game/_/gameId/{id}'
+        async with session.get(url) as responce:
+            return await responce.text()
+
+    async def update_score(self):
+        """Updates score from ESPN"""
+        async with aiohttp.ClientSession() as session:
+            html = await self.fetch_score_html(session, self.game_id)
+
+        soup = bs4.BeautifulSoup(html, features='html.parser')
+
+        homeScoreContainer = soup.findAll("div", {"class": "score icon-font-before"})
+        awayScoreContainer = soup.findAll("div", {"class": "score icon-font-after"})
+
+        if self.is_home == True:
+            self.longhorn_score = homeScoreContainer[0].getText()
+            self.enemy_score = awayScoreContainer[0].getText()
+        else:
+            self.longhorn_score = awayScoreContainer[0].getText()
+            self.enemy_score = homeScoreContainer[0].getText()
 
 def icon_generator(score1, score2):
     """
@@ -26,4 +60,13 @@ def icon_generator(score1, score2):
 
     return 'sample-out.png'
 
-icon_generator(45, 48)
+async def main():
+    red_river = Score(401012739, True)
+    await red_river.update_score()
+    print(f"Longhorn: {red_river.longhorn_score}, OU: {red_river.enemy_score}")
+
+    icon_path = icon_generator(red_river.longhorn_score, red_river.enemy_score)
+    print(icon_path)
+
+loop = asyncio.get_event_loop()
+loop.run_until_complete(main())
