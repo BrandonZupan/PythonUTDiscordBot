@@ -1,3 +1,4 @@
+import sys
 import discord
 import twitterColorDetection
 from datetime import datetime
@@ -129,7 +130,8 @@ class SportsTracking(commands.Cog):
         Stop with stopfootball
         """
         self.game = sports_tracking.Score(int(game_id), int(is_home))
-        self.score_loop.start()
+        await self.score_loop.start()
+        #await self.score_loop()
         logging.info("Started football mode")
 
     @commands.command(name='stopfootball')
@@ -139,28 +141,39 @@ class SportsTracking(commands.Cog):
         logging.info("Stopping football mode")
 
     @tasks.loop(minutes=5)
+    #@commands.command()
+    #@commands.check(is_admin)
     async def score_loop(self):
         #Update score
-        await self.game.update_score()
-        channel = client.get_channel(614935782628786207)
-        await channel.send(f"Home: {self.game.longhorn_score}, Away: {self.game.enemy_score}")
+        try:
+            await self.game.update_score()
+            channel = client.get_channel(614935782628786207)
+            await channel.send(f"Home: {self.game.longhorn_score}, Away: {self.game.enemy_score}")
 
-        #Generate icon
-        icon_path = self.game.icon_generator()
-        """
-        #Update icon on test server
-        guild = client.get_guild(505932838223347713)
-        with open(icon_path) as image:
-            f = image.read()
-            b = bytearray(f)
-            await guild.edit(icon=b)
-            logging.info("Updated score icon")
-        """
-        if self.game.game_status[0:5] == "FINAL":
-            #Game is finished, stopped updating
-            logging.info("Game over, stopping")
-            await channel.send(f"Game over, final score is {self.game.longhorn_score} - {self.game.enemy_score}")
+            #Generate icon
+            icon_path = self.game.icon_generator()
+            
+            try:
+                #Update icon on test server
+                guild = client.get_guild(505932838223347713)
+                with open(icon_path, 'rb') as image:
+                    f = image.read()
+                    b = bytearray(f)
+                    await guild.edit(icon=b)
+                    logging.info("Updated score icon")
+            except:
+                print(f"Error with updating icon: {sys.exc_info()[0]}")
+            
+            print("Checking status")
+            if self.game.game_status[0:5] == "Final":
+                #Game is finished, stopped updating
+                logging.info("Game over, stopping")
+                await channel.send(f"Game over, final score is {self.game.longhorn_score} - {self.game.enemy_score}")
+                self.score_loop.stop()
+        except:
+            print("error")
             self.score_loop.cancel()
+
         
 
     @commands.command()

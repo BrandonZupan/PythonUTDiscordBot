@@ -59,9 +59,9 @@ class Score():
         draw.text((260, 64), str(self.longhorn_score), (255,255,255), font=font)
         #Loser score
         draw.text((260, 264), str(self.enemy_score), (255,255,255), font=font)
-        im.save('sample-out.jpg')
+        im.save('sample-out.png')
 
-        return 'sample-out.jpg'
+        return 'sample-out.png'
 
 async def main():
     red_river = Score(401110723, True)
@@ -71,6 +71,11 @@ async def main():
 
     icon_path = red_river.icon_generator()
     print(icon_path)
+
+    with open(icon_path, "rb") as image:
+        f = image.read()
+        b = bytearray(f)
+        #await guild.edit(icon=b)
 
 #loop = asyncio.get_event_loop()
 #loop.run_until_complete(main())
