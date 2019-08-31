@@ -16,6 +16,32 @@ class Score():
         self.longhorn_score = None
         self.enemy_score = None
         self.game_status = None
+        self.game_started = None
+        self.start_trigger = None
+
+    async def get_start_trigger(self):
+        """Get the word in time class so we know when game starts"""
+        async with aiohttp.ClientSession() as session:
+            html = await self.fetch_score_html(session, self.game_id)
+
+        soup = bs4.BeautifulSoup(html, features='html.parser')
+        status_container = soup.findAll("div", {"class": "game-status"})
+
+        self.start_trigger = status_container[0].getText()
+        self.game_started = False
+
+    async def start_check(self):
+        """See if game has started"""
+        async with aiohttp.ClientSession() as session:
+            html = await self.fetch_score_html(session, self.game_id)
+
+        soup = bs4.BeautifulSoup(html, features='html.parser')
+        status_container = soup.findAll("div", {"class": "game-status"})
+
+        #If the message changes, then the game probably started
+        current_message = status_container[0].getText()
+        if current_message != self.start_trigger:
+            self.game_started = True
 
     async def fetch_score_html(self, session, id):
         """Updates the score from ESPN"""
@@ -64,18 +90,22 @@ class Score():
         return 'sample-out.png'
 
 async def main():
-    red_river = Score(401110723, True)
+    red_river = Score(401112135, True)
+    await red_river.get_start_trigger()
     await red_river.update_score()
     #print(f"Longhorn: {red_river.longhorn_score}, OU: {red_river.enemy_score}")
+    await red_river.start_check()
+    print(red_river.game_started)
+    print(red_river.start_trigger)
     print(red_river.game_status)
 
-    icon_path = red_river.icon_generator()
-    print(icon_path)
+    #icon_path = red_river.icon_generator()
+    #print(icon_path)
 
-    with open(icon_path, "rb") as image:
-        f = image.read()
-        b = bytearray(f)
-        #await guild.edit(icon=b)
+    # with open(icon_path, "rb") as image:
+    #     f = image.read()
+    #     b = bytearray(f)
+    #     #await guild.edit(icon=b)
 
-#loop = asyncio.get_event_loop()
-#loop.run_until_complete(main())
+# loop = asyncio.get_event_loop()
+# loop.run_until_complete(main())
