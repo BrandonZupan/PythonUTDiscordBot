@@ -130,9 +130,11 @@ class SportsTracking(commands.Cog):
         Stop with stopfootball
         """
         self.game = sports_tracking.Score(int(game_id), int(is_home))
+        await self.game.get_start_trigger()
         await self.score_loop.start()
         #await self.score_loop()
         logging.info("Started football mode")
+        await ctx.send(f"Starting football mode, will begin tracking game {game_id} when it begins\nStop with `$stopfootball`")
 
     @commands.command(name='stopfootball')
     @commands.check(is_admin)
@@ -144,35 +146,63 @@ class SportsTracking(commands.Cog):
     #@commands.command()
     #@commands.check(is_admin)
     async def score_loop(self):
-        #Update score
-        try:
-            await self.game.update_score()
+        """Loop used to check score"""
+        #Check if game has started
+        if self.game.game_started == False:
+            await self.game.start_check()
             channel = client.get_channel(614935782628786207)
-            await channel.send(f"Home: {self.game.longhorn_score}, Away: {self.game.enemy_score}")
+            await channel.send("Game has not started")
 
-            #Generate icon
-            icon_path = self.game.icon_generator()
-            
+        #Game started
+        else:
+            #Update score
             try:
-                #Update icon on test server
-                guild = client.get_guild(505932838223347713)
-                with open(icon_path, 'rb') as image:
-                    f = image.read()
-                    b = bytearray(f)
-                    await guild.edit(icon=b)
-                    logging.info("Updated score icon")
+                await self.game.update_score()
+                channel = client.get_channel(614935782628786207)
+                await channel.send(f"Texas A&M Aggies: {self.game.longhorn_score}, Texas State Bobcats: {self.game.enemy_score}")
+
+                #Generate icon
+                icon_path = self.game.icon_generator()
+                
+                try:
+                    #Update icon on test server
+                    guild = client.get_guild(469153450953932800)
+                    with open(icon_path, 'rb') as image:
+                        f = image.read()
+                        b = bytearray(f)
+                        await guild.edit(icon=b)
+                        logging.info("Updated score icon")
+                except:
+                    print(f"Error with updating icon: {sys.exc_info()[0]}")
+                
+                print("Checking status")
+                if self.game.game_status[0:5] == "Final":
+                    #Game is finished, stopped updating
+                    logging.info("Game over, stopping")
+                    await channel.send(f"Game over, final score is {self.game.longhorn_score} - {self.game.enemy_score}")
+
+                    #Update icon for victory
+                    if self.game.longhorn_score > self.game.enemy_score:
+                        icon_path = "icons/orangewhite.png"
+
+                    if self.game.longhorn_score < self.game.enemy_score:
+                        icon_path = "white.png"
+
+                    try:
+                        #Update icon on test server
+                        guild = client.get_guild(469153450953932800)
+                        with open(icon_path, 'rb') as image:
+                            f = image.read()
+                            b = bytearray(f)
+                            await guild.edit(icon=b)
+                            logging.info("Updated score icon")
+                    except:
+                        print(f"Error with updating icon: {sys.exc_info()[0]}")
+
+                    self.score_loop.stop()
             except:
-                print(f"Error with updating icon: {sys.exc_info()[0]}")
-            
-            print("Checking status")
-            if self.game.game_status[0:5] == "Final":
-                #Game is finished, stopped updating
-                logging.info("Game over, stopping")
-                await channel.send(f"Game over, final score is {self.game.longhorn_score} - {self.game.enemy_score}")
-                self.score_loop.stop()
-        except:
-            print("error")
-            self.score_loop.cancel()
+                print("error")
+                self.score_loop.cancel()
 
         
 
