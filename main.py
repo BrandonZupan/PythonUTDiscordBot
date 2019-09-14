@@ -115,6 +115,8 @@ class SportsTracking(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.game = None
+        self.guild = None
+        self.channel = None
 
     #Make it check every 5 minutes for score updates
     #If there's an update, change the icon
@@ -130,11 +132,14 @@ class SportsTracking(commands.Cog):
         Stop with stopfootball
         """
         self.game = sports_tracking.Score(int(game_id), int(is_home))
+        self.guild = ctx.guild
+        self.channel = ctx.channel
         await self.game.get_start_trigger()
-        await self.score_loop.start()
-        #await self.score_loop()
         logging.info("Started football mode")
         await ctx.send(f"Starting football mode, will begin tracking game {game_id} when it begins\nStop with `$stopfootball`")
+        await self.score_loop.start()
+        #await self.score_loop()
+
 
     @commands.command(name='stopfootball')
     @commands.check(is_admin)
@@ -150,32 +155,32 @@ class SportsTracking(commands.Cog):
         #Check if game has started
         if self.game.game_started == False:
             await self.game.start_check()
-            channel = client.get_channel(614935782628786207)
-            await channel.send("Game has not started")
+            #channel = client.get_channel(617406092191858699)
+            await self.channel.send("Game has not started")
 
         #Game started
         else:
             #Update score
             try:
                 await self.game.update_score()
-                channel = client.get_channel(614935782628786207)
-                await channel.send(f"Texas A&M Aggies: {self.game.longhorn_score}, Texas State Bobcats: {self.game.enemy_score}")
+                #channel = client.get_channel(617406092191858699)
+                await self.channel.send(f"Texas Longhorns: {self.game.longhorn_score}, LSU Tigers: {self.game.enemy_score}")
 
                 #Generate icon
                 icon_path = self.game.icon_generator()
                 
                 try:
                     #Update icon on test server
-                    guild = client.get_guild(469153450953932800)
+                    #guild = client.get_guild(469153450953932800)
                     with open(icon_path, 'rb') as image:
                         f = image.read()
                         b = bytearray(f)
-                        await guild.edit(icon=b)
+                        await self.guild.edit(icon=b)
                         logging.info("Updated score icon")
                 except:
                     print(f"Error with updating icon: {sys.exc_info()[0]}")
                 
-                print("Checking status")
+                #print("Checking status")
                 if self.game.game_status[0:5] == "Final":
                     #Game is finished, stopped updating
                     logging.info("Game over, stopping")
@@ -190,18 +195,18 @@ class SportsTracking(commands.Cog):
 
                     try:
                         #Update icon on test server
-                        guild = client.get_guild(469153450953932800)
+                        #guild = client.get_guild(469153450953932800)
                         with open(icon_path, 'rb') as image:
                             f = image.read()
                             b = bytearray(f)
-                            await guild.edit(icon=b)
+                            await self.guild.edit(icon=b)
                             logging.info("Updated score icon")
                     except:
                         print(f"Error with updating icon: {sys.exc_info()[0]}")
 
                     self.score_loop.stop()
             except:
-                print("error")
+                print("error, stopping loop")
                 self.score_loop.cancel()
 
         

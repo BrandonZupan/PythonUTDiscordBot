@@ -40,6 +40,8 @@ class Score():
 
         #If the message changes, then the game probably started
         current_message = status_container[0].getText()
+        #print("Checking if game started")
+        #print(f"Old: {self.start_trigger}, New: {current_message}")
         if current_message != self.start_trigger:
             self.game_started = True
 
@@ -76,7 +78,7 @@ class Score():
         Output: Path to new icon
         """
 
-        im = Image.open("icontemplate.png")
+        im = Image.open("icontemplate-lsu.png")
         draw = ImageDraw.Draw(im)
 
         font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 150)
@@ -90,7 +92,7 @@ class Score():
         return 'sample-out.png'
 
 async def main():
-    red_river = Score(401112135, True)
+    red_river = Score(401112085, True)
     await red_river.get_start_trigger()
     await red_river.update_score()
     #print(f"Longhorn: {red_river.longhorn_score}, OU: {red_river.enemy_score}")
@@ -107,5 +109,5 @@ async def main():
     #     b = bytearray(f)
     #     #await guild.edit(icon=b)
 
-# loop = asyncio.get_event_loop()
-# loop.run_until_complete(main())
+loop = asyncio.get_event_loop()
+loop.run_until_complete(main())
