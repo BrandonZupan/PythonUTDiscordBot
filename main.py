@@ -147,7 +147,7 @@ class SportsTracking(commands.Cog):
         self.score_loop.cancel()
         logging.info("Stopping football mode")
 
-    @tasks.loop(minutes=5)
+    @tasks.loop(seconds=10)
     #@commands.command()
     #@commands.check(is_admin)
     async def score_loop(self):
@@ -156,29 +156,34 @@ class SportsTracking(commands.Cog):
         if self.game.game_started == False:
             await self.game.start_check()
             #channel = client.get_channel(617406092191858699)
-            await self.channel.send("Game has not started")
+            #await self.channel.send("Game has not started")
+            logging.info("Game has not started")
 
         #Game started
         else:
             #Update score
             try:
                 await self.game.update_score()
-                #channel = client.get_channel(617406092191858699)
-                await self.channel.send(f"Texas Longhorns: {self.game.longhorn_score}, LSU Tigers: {self.game.enemy_score}")
-
-                #Generate icon
-                icon_path = self.game.icon_generator()
+                logging.info("Checked scores")
                 
-                try:
-                    #Update icon on test server
-                    #guild = client.get_guild(469153450953932800)
-                    with open(icon_path, 'rb') as image:
-                        f = image.read()
-                        b = bytearray(f)
-                        await self.guild.edit(icon=b)
-                        logging.info("Updated score icon")
-                except:
-                    print(f"Error with updating icon: {sys.exc_info()[0]}")
+                #print(f"new {str(self.longhorn_score)} - {str(self.enemy_score)}, old {str(self.icon_longhorn_score)} - {str(self.icon_enemy_score)}")
+                if ((self.game.longhorn_score != self.game.icon_longhorn_score) or (self.game.enemy_score != self.game.icon_enemy_score)):
+                    #channel = client.get_channel(617406092191858699)
+                    await self.channel.send(f"Texas Longhorns: {self.game.longhorn_score}, Rice Owls: {self.game.enemy_score}")
+
+                    #Generate icon
+                    icon_path = self.game.icon_generator()
+                    
+                    try:
+                        #Update icon on test server
+                        #guild = client.get_guild(469153450953932800)
+                        with open(icon_path, 'rb') as image:
+                            f = image.read()
+                            b = bytearray(f)
+                            await self.guild.edit(icon=b)
+                            logging.info("Updated score icon")
+                    except:
+                        print(f"Error with updating icon: {sys.exc_info()[0]}")
                 
                 #print("Checking status")
                 if self.game.game_status[0:5] == "Final":

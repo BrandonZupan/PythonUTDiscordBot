@@ -15,6 +15,9 @@ class Score():
         self.is_home = is_home
         self.longhorn_score = None
         self.enemy_score = None
+        # Scores on the icon, 1 since its an impossible score
+        self.icon_longhorn_score = 1
+        self.icon_enemy_score = 0
         self.game_status = None
         self.game_started = None
         self.start_trigger = None
@@ -41,7 +44,7 @@ class Score():
         #If the message changes, then the game probably started
         current_message = status_container[0].getText()
         #print("Checking if game started")
-        #print(f"Old: {self.start_trigger}, New: {current_message}")
+        print(f"Old: {self.start_trigger}, New: {current_message}")
         if current_message != self.start_trigger:
             self.game_started = True
 
@@ -78,7 +81,7 @@ class Score():
         Output: Path to new icon
         """
 
-        im = Image.open("icontemplate-lsu.png")
+        im = Image.open("icontemplate-rice.png")
         draw = ImageDraw.Draw(im)
 
         font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 150)
@@ -89,17 +92,22 @@ class Score():
         draw.text((260, 264), str(self.enemy_score), (255,255,255), font=font)
         im.save('sample-out.png')
 
+        self.icon_longhorn_score = self.longhorn_score
+        self.icon_enemy_score = self.enemy_score
+
         return 'sample-out.png'
 
 async def main():
     red_river = Score(401112085, True)
     await red_river.get_start_trigger()
     await red_river.update_score()
+    yeet = red_river.icon_generator()
+    print(yeet)
     #print(f"Longhorn: {red_river.longhorn_score}, OU: {red_river.enemy_score}")
-    await red_river.start_check()
-    print(red_river.game_started)
-    print(red_river.start_trigger)
-    print(red_river.game_status)
+    #await red_river.start_check()
+    # print(red_river.game_started)
+    # print(red_river.start_trigger)
+    # print(red_river.game_status)
 
     #icon_path = red_river.icon_generator()
     #print(icon_path)
@@ -109,5 +117,5 @@ async def main():
     #     b = bytearray(f)
     #     #await guild.edit(icon=b)
 
-loop = asyncio.get_event_loop()
-loop.run_until_complete(main())
+#loop = asyncio.get_event_loop()
+#loop.run_until_complete(main())
