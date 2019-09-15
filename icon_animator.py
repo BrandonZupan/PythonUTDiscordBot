@@ -17,10 +17,11 @@ def animate_icon(score, standard):
     Output: Path to the new gif icon
     """
     FRAMERATE = 10
-    LENGTH = 4  #in seconds
+    #LENGTH = 4  #in seconds
     IMAGE_SIZE = (512,512)
 
-    score_icon = Image.open(score)
+    score_icon = Image.open(score).convert("RGBA")
+    score_icon = score_icon.resize(IMAGE_SIZE)
     standard_icon = Image.open(standard).convert("RGBA")
     standard_icon = standard_icon.resize(IMAGE_SIZE)
 
@@ -31,7 +32,7 @@ def animate_icon(score, standard):
 
     #new_image.save("testimage.png")
 
-    frames = LENGTH*FRAMERATE
+    #frames = LENGTH*FRAMERATE
 
     file_number = 0
 
@@ -72,5 +73,6 @@ def animate_icon(score, standard):
 
 # start = time.time()
 # animate_icon("sample-out.png", "icons/white.png")
+# animate_icon("icons/orangewhite.png", "sample-out.png")
 # end = time.time()
 # print(end - start)
