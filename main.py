@@ -14,6 +14,7 @@ import aiohttp
 import bs4
 from PIL import Image, ImageFont, ImageDraw
 import sports_tracking
+import icon_animator
 
 #Start logging
 logging.basicConfig(level=logging.INFO)
@@ -158,7 +159,7 @@ class SportsTracking(commands.Cog):
             #channel = client.get_channel(617406092191858699)
             #await self.channel.send("Game has not started")
             logging.info("Game has not started")
-            self.channel.send("Manually starting game")
+            await self.channel.send("Manually starting game")
             self.game.game_started = True
 
         #Game started
@@ -175,11 +176,12 @@ class SportsTracking(commands.Cog):
 
                     #Generate icon
                     icon_path = self.game.icon_generator()
+                    gif_icon = icon_animator.animate_icon(icon_path, "icons/white.png")
                     
                     try:
                         #Update icon on test server
                         #guild = client.get_guild(469153450953932800)
-                        with open(icon_path, 'rb') as image:
+                        with open(gif_icon, 'rb') as image:
                             f = image.read()
                             b = bytearray(f)
                             await self.guild.edit(icon=b)
@@ -195,10 +197,11 @@ class SportsTracking(commands.Cog):
 
                     #Update icon for victory
                     if self.game.longhorn_score > self.game.enemy_score:
-                        icon_path = "icons/orangewhite.png"
+                        score_icon_path = self.game.icon_generator()
+                        icon_path = icon_animator.animate_icon(score_icon_path, "icons/orangewhite.png")
 
                     if self.game.longhorn_score < self.game.enemy_score:
-                        icon_path = "white.png"
+                        icon_path = "icons/white.png"
 
                     try:
                         #Update icon on test server

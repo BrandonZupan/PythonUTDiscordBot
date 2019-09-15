@@ -5,6 +5,8 @@ keys.txt
 *.png
 *.jpg
 /icons
+*.gif
+*.mp4
 
 #Python stuff
 /__pycache__
