@@ -147,7 +147,7 @@ class SportsTracking(commands.Cog):
         self.score_loop.cancel()
         logging.info("Stopping football mode")
 
-    @tasks.loop(seconds=10)
+    @tasks.loop(minutes=1)
     #@commands.command()
     #@commands.check(is_admin)
     async def score_loop(self):
