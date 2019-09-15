@@ -158,6 +158,8 @@ class SportsTracking(commands.Cog):
             #channel = client.get_channel(617406092191858699)
             #await self.channel.send("Game has not started")
             logging.info("Game has not started")
+            self.channel.send("Manually starting game")
+            self.game.game_started = True
 
         #Game started
         else:
