@@ -156,11 +156,11 @@ class SportsTracking(commands.Cog):
         #Check if game has started
         if self.game.game_started == False:
             await self.game.start_check()
-            #channel = client.get_channel(617406092191858699)
-            #await self.channel.send("Game has not started")
+            # channel = client.get_channel(617406092191858699)
+            # await self.channel.send("Game has not started")
             logging.info("Game has not started")
-            await self.channel.send("Manually starting game")
-            self.game.game_started = True
+            # await self.channel.send("Manually starting game")
+            # self.game.game_started = True
 
         #Game started
         else:
@@ -172,7 +172,7 @@ class SportsTracking(commands.Cog):
                 #print(f"new {str(self.longhorn_score)} - {str(self.enemy_score)}, old {str(self.icon_longhorn_score)} - {str(self.icon_enemy_score)}")
                 if ((self.game.longhorn_score != self.game.icon_longhorn_score) or (self.game.enemy_score != self.game.icon_enemy_score)):
                     #channel = client.get_channel(617406092191858699)
-                    await self.channel.send(f"Texas Longhorns: {self.game.longhorn_score}, Rice Owls: {self.game.enemy_score}")
+                    await self.channel.send(f"Longhorns: {self.game.longhorn_score}, Losers: {self.game.enemy_score}")
 
                     #Generate icon
                     icon_path = self.game.icon_generator()

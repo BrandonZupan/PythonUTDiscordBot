@@ -81,7 +81,7 @@ class Score():
         Output: Path to new icon
         """
 
-        im = Image.open("icontemplate-rice.png")
+        im = Image.open("gameday.png")
         draw = ImageDraw.Draw(im)
 
         font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 150)
@@ -97,12 +97,18 @@ class Score():
 
         return 'sample-out.png'
 
+    def set_score(self, new_longhorn, new_enemy):
+        self.longhorn_score = new_longhorn
+        self.enemy_score = new_enemy
+
 async def main():
     red_river = Score(401112085, True)
-    await red_river.get_start_trigger()
-    await red_river.update_score()
+    red_river.set_score(10,5)
     yeet = red_river.icon_generator()
-    print(yeet)
+    # await red_river.get_start_trigger()
+    # await red_river.update_score()
+    # yeet = red_river.icon_generator()
+    # print(yeet)
     #print(f"Longhorn: {red_river.longhorn_score}, OU: {red_river.enemy_score}")
     #await red_river.start_check()
     # print(red_river.game_started)
@@ -117,5 +123,5 @@ async def main():
     #     b = bytearray(f)
     #     #await guild.edit(icon=b)
 
-#loop = asyncio.get_event_loop()
-#loop.run_until_complete(main())
+# loop = asyncio.get_event_loop()
+# loop.run_until_complete(main())
