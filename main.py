@@ -239,20 +239,56 @@ client.add_cog(SportsTracking(client))
 
 class SetRank(commands.Cog):
     """Allows for the setting of ranks for users"""
-    def __init__(self):
-        self.rankdb = create_engine('memory', echo=True)
+    def __init__(self, bot):
+        self.bot = bot
+        self.rank_engine = create_engine("sqlite:///:memory:", echo=True)
+        self.RankSession = sessionmaker(bind=self.rank_engine)
+        self.rankdb = self.RankSession()
 
     class RankEntry(Base):
+        __tablename__ = "college"
+
         name = Column(String, primary_key=True)
         rank_id = Column(Integer)
 
     #prohibited ranks
     PROHIBITED_RANKS = ["founder", "moderator", "mod in training", "fake nitro", "time out", "bots", "server mute", "announcer", "eyes of texas"]
 
+    async def addrank(self, rank_name, _rank_id):
+        new_rank = self.RankEntry(name=rank_name, rank_id = _rank_id)
+        self.rankdb.merge(new_rank)
+        self.rankdb.commit()
+
     @commands.command(name='newrank')
     @commands.check(is_admin)
-    async def newrank(self, ctx):
-        await ctx.send(ctx.message.content)
+    async def newrank(self, ctx, *args):
+        """
+        Adds a new rank to the list of assignable ranks. 
+        Make sure to put multi word stuff, like Class of 2023 in parenthesis
+
+        Usage:
+        $addrole Category "Name of rank"
+        $addrole Category "Name of rank on server" "Name of rank for assignment"
+
+        Ex:
+        $addrole College "Natural Sciences"
+        $addrole College "Natural Sciences" "Science"
+        """
+
+        #await ctx.send('{} arguments: {}'.format(len(args), ','.join(args)))
+
+        #Parse into one of the two options
+        if len(args) == 2:
+            #We in option one
+            await ctx.send('Category: {}\nName: {}'.format(args[0], args[1]))
+            await self.addrank(args[1], args[1])
+            await ctx.message.add_reaction('👌')
+            logging.info('{} added {} with name {} in category {}'.format(ctx.author.name, args[1], args[1], args[0]))
+        elif len(args) == 3:
+            await ctx.send('Category: {}\nName: {}\nCommand: {}'.format(args[0], args[1], args[2]))
+        else:
+            #We in hell
+            await ctx.send('Error: Cannot parse the command, make sure it be formatted good')
 
     @commands.command(name='-rank')
     @commands.check(is_brandon)
