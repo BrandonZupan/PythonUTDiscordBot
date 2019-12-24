@@ -111,6 +111,10 @@ async def is_brandon(ctx):
     brandon = discord.utils.get(ctx.guild.members, id=158062741112881152)
     return brandon == ctx.author
 
+#################
+#Sports Tracking#
+#################
+
 
 class SportsTracking(commands.Cog):
     def __init__(self, bot):
