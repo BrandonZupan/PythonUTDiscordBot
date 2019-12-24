@@ -233,6 +233,21 @@ class SportsTracking(commands.Cog):
 
 client.add_cog(SportsTracking(client))
 
+##########
+#Set Rank#
+##########
+
+class SetRank(commands.Cog):
+    """Allows for the setting of ranks for users"""
+    #use a database of allowed ranks?
+
+    @commands.command(name='newrank')
+    @commands.check(is_brandon)
+    try:
+        newRank = discord.utils.get(
+
+
+
 @client.event
 async def on_ready():
     print('We have logged in as {0.user}'.format(client))
