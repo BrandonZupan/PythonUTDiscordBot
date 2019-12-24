@@ -239,13 +239,28 @@ client.add_cog(SportsTracking(client))
 
 class SetRank(commands.Cog):
     """Allows for the setting of ranks for users"""
-    #use a database of allowed ranks?
+    def __init__(self):
+        self.rankdb = create_engine('memory', echo=True)
+
+    class RankEntry(Base):
+        name = Column(String, primary_key=True)
+        rank_id = Column(Integer)
+
+    #prohibited ranks
+    PROHIBITED_RANKS = ["founder", "moderator", "mod in training", "fake nitro", "time out", "bots", "server mute", "announcer", "eyes of texas"]
 
     @commands.command(name='newrank')
-    @commands.check(is_brandon)
-    try:
-        newRank = discord.utils.get(
+    @commands.check(is_admin)
+    async def newrank(self, ctx):
+        await ctx.send(ctx.message.content)
 
+    @commands.command(name='-rank')
+    @commands.check(is_brandon)
+    async def rewrite_rank(self, ctx):
+        await ctx.send("recieved")
+
+
+client.add_cog(SetRank(client))
 
 
 @client.event
