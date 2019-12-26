@@ -242,20 +242,27 @@ class SetRank(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.rank_engine = create_engine("sqlite:///:memory:", echo=True)
+        Base.metadata.create_all(self.rank_engine)
         self.RankSession = sessionmaker(bind=self.rank_engine)
         self.rankdb = self.RankSession()
+        #prohibited ranks
+        self.PROHIBITED_RANKS = ["Founder", "Moderator", "Mod in Training", "Fake Nitro", "Time out", "Bots", "Server Mute", "Announcer", "Eyes of Texas", "Dyno", "Pokecord", "Rythm"]
+
 
     class RankEntry(Base):
-        __tablename__ = "college"
+        __tablename__ = "ranks"
 
         name = Column(String, primary_key=True)
+        category = Column(String)
         rank_id = Column(Integer)
 
-    #prohibited ranks
-    PROHIBITED_RANKS = ["founder", "moderator", "mod in training", "fake nitro", "time out", "bots", "server mute", "announcer", "eyes of texas"]
+    async def addrank(self, _category, rank_name, _rank_id):
+        """
+        Creates a new entry in rank database
+        Inputs: Table name, name of rank, id it points to
+        """
 
-    async def addrank(self, rank_name, _rank_id):
-        new_rank = self.RankEntry(name=rank_name, rank_id = _rank_id)
+        new_rank = self.RankEntry(name=rank_name, category=_category, rank_id=_rank_id)
         self.rankdb.merge(new_rank)
         self.rankdb.commit()
 
@@ -275,17 +282,28 @@ class SetRank(commands.Cog):
         $addrole College "Natural Sciences" "Science"
         """
 
-        #await ctx.send('{} arguments: {}'.format(len(args), ','.join(args)))
+        #Make sure it isn't a prohibited rank
+        if args[1] in self.PROHIBITED_RANKS:
+            await ctx.send("Error: Tried to add a prohibited rank.  Dont do that")
+            await ctx.message.add_reaction("<:uhm:582370528984301568>")
+            await ctx.message.add_reaction("<:ickycat:576983438385741836>")
+            return
 
         #Parse into one of the two options
         if len(args) == 2:
             #We in option one
-            await ctx.send('Category: {}\nName: {}'.format(args[0], args[1]))
-            await self.addrank(args[1], args[1])
+            #await ctx.send('Category: {}\nName: {}'.format(args[0], args[1]))
+            role = discord.utils.get(ctx.guild.roles, name=args[1])
+            if role == None:
+                await ctx.send("Error: Could not find the role")
+                return
+            await self.addrank(args[0].lower(), args[1].lower(), role.id)
             await ctx.message.add_reaction('👌')
             logging.info('{} added {} with name {} in category {}'.format(ctx.author.name, args[1], args[1], args[0]))
+
         elif len(args) == 3:
             await ctx.send('Category: {}\nName: {}\nCommand: {}'.format(args[0], args[1], args[2]))
+
         else:
             #We in hell
             await ctx.send('Error: Cannot parse the command, make sure it be formatted good')
