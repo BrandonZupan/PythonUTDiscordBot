@@ -289,24 +289,31 @@ class SetRank(commands.Cog):
             await ctx.message.add_reaction("<:ickycat:576983438385741836>")
             return
 
+        role = discord.utils.get(ctx.guild.roles, name=args[1])
+        if role == None:
+            await ctx.send("Error: Could not find the role")
+            return
+        
         #Parse into one of the two options
         if len(args) == 2:
             #We in option one
             #await ctx.send('Category: {}\nName: {}'.format(args[0], args[1]))
-            role = discord.utils.get(ctx.guild.roles, name=args[1])
-            if role == None:
-                await ctx.send("Error: Could not find the role")
-                return
             await self.addrank(args[0].lower(), args[1].lower(), role.id)
-            await ctx.message.add_reaction('👌')
             logging.info('{} added {} with name {} in category {}'.format(ctx.author.name, args[1], args[1], args[0]))
 
         elif len(args) == 3:
-            await ctx.send('Category: {}\nName: {}\nCommand: {}'.format(args[0], args[1], args[2]))
+            #await ctx.send('Category: {}\nName: {}\nCommand: {}'.format(args[0], args[1], args[2]))
+            #Add an alias
+            await self.addrank(args[0].lower(), args[2].lower(), role.id)
+            logging.info('{} added {} with name {} in category {}'.format(ctx.author.name, args[1], args[2], args[0]))
+ 
 
         else:
             #We in hell
             await ctx.send('Error: Cannot parse the command, make sure it be formatted good')
+            return
+
+        await ctx.message.add_reaction('👌')
 
     @commands.command(name='-rank')
     @commands.check(is_brandon)
