@@ -285,7 +285,7 @@ class SetRank(commands.Cog):
 
         #Make sure it isn't a prohibited rank
         if args[1] in self.PROHIBITED_RANKS:
-            await ctx.send("Error: Tried to add a prohibited rank.  Dont do that")
+            await ctx.send("Error: Tried to add a prohibited rank.  Don't do that")
             await ctx.message.add_reaction("<:uhm:582370528984301568>")
             await ctx.message.add_reaction("<:ickycat:576983438385741836>")
             return
@@ -315,6 +315,31 @@ class SetRank(commands.Cog):
             return
 
         await ctx.message.add_reaction('👌')
+
+    @commands.command(name="-ranks")
+    @commands.check(is_brandon)
+    async def rewrite_ranks(self, ctx):
+        """
+        PM's a list of ranks to the user
+        """
+        #Generate list of tuples in format ("Category", "Rank name", "Amount of people")
+        #If the rank ID's name is not in the list, then add it
+        all_ranks_id = []
+        for instance in self.rankdb.query(self.RankEntry).order_by(self.RankEntry.name):
+            #Check if its in there
+            is_not_in = True
+            for rank in all_ranks_id:
+                if instance.rank_id == rank[0]:
+                    is_in == False
+                break
+            if is_not_in:
+                all_ranks_id.append((instance.rank_id, instance.category)
+            #if instance.rank_id not in all_ranks_id:
+                #all_ranks_id.append(instance.rank_id)
+        print(all_ranks_id)
+        
+        #Create function that sends list of tuples as embed
+
 
     @commands.command(name='-rank')
     @commands.check(is_brandon)
