@@ -272,13 +272,14 @@ class SetRank(commands.Cog):
         """
         Adds a new rank to the list of assignable ranks. 
         Make sure to put multi word stuff, like Class of 2023 in parenthesis
+        It is not case sensitive
 
-        Usage:
-        $addrole Category "Name of rank"
-        $addrole Category "Name of rank on server" "Name of rank for assignment"
+        Creating a rank:
+        $newrank Category "Name of rank"
+        $newrank College "Natural Sciences"
 
-        Ex:
-        $addrole College "Natural Sciences"
+        Creating an alias for a rank:
+        $newrank College "Name of rank" "Name of alias"
         $addrole College "Natural Sciences" "Science"
         """
 
