@@ -241,7 +241,7 @@ class SetRank(commands.Cog):
     """Allows for the setting of ranks for users"""
     def __init__(self, bot):
         self.bot = bot
-        self.rank_engine = create_engine("sqlite:///:memory:", echo=True)
+        self.rank_engine = create_engine("sqlite:///:memory:", echo=False)
         Base.metadata.create_all(self.rank_engine)
         self.RankSession = sessionmaker(bind=self.rank_engine)
         self.rankdb = self.RankSession()
@@ -325,17 +325,22 @@ class SetRank(commands.Cog):
         #Generate list of tuples in format ("Category", "Rank name", "Amount of people")
         #If the rank ID's name is not in the list, then add it
         all_ranks_id = []
+        is_in = False
         for instance in self.rankdb.query(self.RankEntry).order_by(self.RankEntry.name):
             #Check if its in there
-            is_not_in = True
+            is_in = False
+            print("heloooo")
             for rank in all_ranks_id:
+                print(f"{instance.rank_id} - {rank[0]}")
                 if instance.rank_id == rank[0]:
-                    is_in == False
-                break
-            if is_not_in:
-                all_ranks_id.append((instance.rank_id, instance.category)
-            #if instance.rank_id not in all_ranks_id:
-                #all_ranks_id.append(instance.rank_id)
+                    is_in = True
+                    print(f"is_in == {is_in}")
+                    break
+
+            print(f"At value check, is_in == {is_in}")
+            if is_in == False:
+                all_ranks_id.append((instance.rank_id, instance.category))
+
         print(all_ranks_id)
         
         #Create function that sends list of tuples as embed
