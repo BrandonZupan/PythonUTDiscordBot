@@ -316,6 +316,19 @@ class SetRank(commands.Cog):
 
         await ctx.message.add_reaction('👌')
 
+    async def embed_list_builder(self, ctx, all_ranks):
+        """
+        Sends an embedded list of ranks to the output channel
+        """
+        embed = discord.Embed(title="Ranks", color=0xbf5700)
+        output = ""
+        for role in all_ranks:
+            output += f"`{role[0]} - {role[1]}, {role[2]} members`\n"
+
+        embed.add_field(name="All available ranks", value=output, inline=False)
+        await ctx.send(embed=embed)
+
+
     @commands.command(name="-ranks")
     @commands.check(is_brandon)
     async def rewrite_ranks(self, ctx):
@@ -342,8 +355,21 @@ class SetRank(commands.Cog):
                 all_ranks_id.append((instance.rank_id, instance.category))
 
         print(all_ranks_id)
+
+        #So we got a list of tuples with id and category, turn that into list of Category, Name, and amount of people
+        all_ranks = []
+        utdiscord = client.get_guild(469153450953932800)
+        for rank in all_ranks_id:
+            ut_role = discord.utils.get(utdiscord.roles, id=rank[0])
+            all_ranks.append((rank[1], ut_role.name, str(len(ut_role.members))))
+        #Sort it with a lambda function, first by name of role then by name of category
+        all_ranks.sort(key=lambda tup: tup[1])
+        all_ranks.sort(key=lambda tup: tup[0])
+
+        print(all_ranks)
         
         #Create function that sends list of tuples as embed
+        await self.embed_list_builder(ctx, all_ranks)
 
 
     @commands.command(name='-rank')
