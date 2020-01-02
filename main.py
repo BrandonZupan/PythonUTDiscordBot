@@ -241,7 +241,7 @@ class SetRank(commands.Cog):
     """Allows for the setting of ranks for users"""
     def __init__(self, bot):
         self.bot = bot
-        self.rank_engine = create_engine("sqlite:///:memory:", echo=False)
+        self.rank_engine = create_engine("sqlite:///ranks.db", echo=False)
         Base.metadata.create_all(self.rank_engine)
         self.RankSession = sessionmaker(bind=self.rank_engine)
         self.rankdb = self.RankSession()
@@ -318,7 +318,7 @@ class SetRank(commands.Cog):
 
     @commands.command(name="deleterank")
     @commands.check(is_admin)
-    async def deleterank(self, ctx):
+    async def deleterank(self, ctx, *args):
         """
         Removes a rank or alias from the rank database. 
         Include multi word ranks in " "
@@ -330,6 +330,15 @@ class SetRank(commands.Cog):
         $deleterank "Natural Sciences"
         $deleterank Science
         """
+        #Try and find the rank and yeet it, else display an error
+        try:
+            victim = self.rankdb.query(self.RankEntry).filter_by(name=args[0].lower()).one()
+            self.rankdb.delete(victim)
+            self.rankdb.commit()
+            await ctx.send(f"Removed rank {args[0]}")
+            logging.info(ctx.author.name + " deleted rank " + victim.name)
+        except:
+            await ctx.send("Error: Could not find rank")
 
     async def embed_list_builder(self, ctx, all_ranks):
         """
@@ -357,19 +366,19 @@ class SetRank(commands.Cog):
         for instance in self.rankdb.query(self.RankEntry).order_by(self.RankEntry.name):
             #Check if its in there
             is_in = False
-            print("heloooo")
+            #print("heloooo")
             for rank in all_ranks_id:
-                print(f"{instance.rank_id} - {rank[0]}")
+                #print(f"{instance.rank_id} - {rank[0]}")
                 if instance.rank_id == rank[0]:
                     is_in = True
-                    print(f"is_in == {is_in}")
+                    #print(f"is_in == {is_in}")
                     break
 
-            print(f"At value check, is_in == {is_in}")
+            #print(f"At value check, is_in == {is_in}")
             if is_in == False:
                 all_ranks_id.append((instance.rank_id, instance.category))
 
-        print(all_ranks_id)
+        #print(all_ranks_id)
 
         #So we got a list of tuples with id and category, turn that into list of Category, Name, and amount of people
         all_ranks = []
@@ -381,7 +390,7 @@ class SetRank(commands.Cog):
         all_ranks.sort(key=lambda tup: tup[1])
         all_ranks.sort(key=lambda tup: tup[0])
 
-        print(all_ranks)
+        #print(all_ranks)
         
         #Create function that sends list of tuples as embed
         await self.embed_list_builder(ctx, all_ranks)
