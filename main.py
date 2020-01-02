@@ -316,6 +316,21 @@ class SetRank(commands.Cog):
 
         await ctx.message.add_reaction('👌')
 
+    @commands.command(name="deleterank")
+    @commands.check(is_admin)
+    async def deleterank(self, ctx):
+        """
+        Removes a rank or alias from the rank database. 
+        Include multi word ranks in " "
+
+        Usage
+        $deleterank "Name of rank"
+
+        Example
+        $deleterank "Natural Sciences"
+        $deleterank Science
+        """
+
     async def embed_list_builder(self, ctx, all_ranks):
         """
         Sends an embedded list of ranks to the output channel
