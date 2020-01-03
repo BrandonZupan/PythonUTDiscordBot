@@ -787,7 +787,7 @@ async def cc(ctx, *args):
         await ctx.message.add_reaction('👌')
         logging.info(ctx.author.name + " added " + newCC.name + " with responce " + newCC.responce)
 
-"""
+
 #@client.event
 async def on_command_error(ctx, error):
     if isinstance(error, commands.errors.CommandNotFound):
@@ -802,7 +802,7 @@ async def on_command_error(ctx, error):
                 return
     else:
         print(error)
-"""
+
 
 
 @client.event
