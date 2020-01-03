@@ -340,6 +340,7 @@ class SetRank(commands.Cog):
         except:
             await ctx.send("Error: Could not find rank")
 
+
     async def embed_list_builder(self, ctx, all_ranks):
         """
         Sends an embedded list of ranks to the output channel
@@ -398,8 +399,38 @@ class SetRank(commands.Cog):
 
     @commands.command(name='-rank')
     @commands.check(is_brandon)
-    async def rewrite_rank(self, ctx):
-        await ctx.send("recieved")
+    async def rewrite_rank(self, ctx, *newRank):
+        """
+        Adds a rank from the database to a user
+        """
+        if len(newRank) == 0:
+            await ctx.send("Use `$rank name` to add a rank.  Use `$ranks` to list all ranks")
+        else:
+            newRankName = ' '.join(newRank)
+            newRankName = newRankName.lower()
+            #Establish guild to use
+            utdiscord = client.get_guild(469153450953932800)
+            utuser = discord.utils.get(utdiscord.members, id=ctx.author.id)
+            try:
+                victim = self.rankdb.query(self.RankEntry).filter_by(name=newRankName).one()
+                newRank = discord.utils.get(utdiscord.roles, id=victim.rank_id)
+            except:
+                await ctx.send(f"{newRankName} not found.  Make sure it is typed the same way as in the list of ranks found in `$ranks`")
+            
+            #Check if they already have the role.  If so, delete it.  Else add it
+            if newRank in utuser.roles:
+                #If so, delete it
+                await utuser.remove_roles(newRank)
+                await ctx.send(f'Removed rank {newRank.name} from {ctx.author.mention}')
+                logging.info(f'Removed rank {newRank.name} from {ctx.author.mention}')
+
+            else:
+                #Add it since they don't got it
+                await utuser.add_roles(newRank, reason="self assigned with Eyes of Texas")
+                await ctx.message.add_reaction('👌')
+                logging.info(f'Added rank {newRank.name} to {ctx.author.mention}')
+
+
 
 
 client.add_cog(SetRank(client))
