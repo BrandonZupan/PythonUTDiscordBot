@@ -385,8 +385,8 @@ class SetRank(commands.Cog):
             await ctx.send(embed=embed)
 
 
-    @commands.command(name="-ranks")
-    @commands.check(is_brandon)
+    @commands.command(name="ranks")
+    #@commands.check(is_brandon)
     async def rewrite_ranks(self, ctx):
         """
         PM's a list of ranks to the user
@@ -428,8 +428,8 @@ class SetRank(commands.Cog):
         await self.embed_list_builder(ctx, all_ranks)
 
 
-    @commands.command(name='-rank')
-    @commands.check(is_brandon)
+    @commands.command(name='rank')
+    #@commands.check(is_brandon)
     async def rewrite_rank(self, ctx, *newRank):
         """
         Adds a rank from the database to a user
@@ -515,107 +515,6 @@ async def get_ip(ctx):
 async def startvpn(ctx):
     await ctx.send("Attempting to start vpn, wish me luck")
     subprocess.run("/home/brandon/startvpn.sh")
-
-
-
-allranks = {
-    'ugs': 591000675203416076, 
-    'social work': 469195563267522572, 
-    'nursing': 469195544154341379, 
-    'natural sciences': 469195501749665797, 
-    'liberal arts': 469195411098435593, 
-    'geosciences': 469195394920742943, 
-    'fine arts': 469195366932283394, 
-    'engineering': 469195313547313162, 
-    'education': 469195286728802314, 
-    'communication': 469195248913088534, 
-    'business': 469195224162238464, 
-    'architecture': 469195103026544642, 
-    'alumni': 469348087593435136, 
-    'riverside': 488209904428122112, 
-    'west campus': 470052478184849408, 
-    'north campus': 597955125981610008, 
-    'jester west': 470052452960436235, 
-    'jester east': 470052427291164672, 
-    'san jacinto hall': 470052381233512458, 
-    'roberts hall': 470052350065901588, 
-    'prather hall': 470052139943854080, 
-    'moore-hill hall': 470052105558818826, 
-    'creekside hall': 470052057639026708, 
-    'brackenridge hall': 470052017432428546, 
-    'whitis court': 470051984939155476, 
-    'littlefield hall': 470051934577885194, 
-    'kinsolving hall': 470051900016820237, 
-    'duren hall': 470051846527123456, 
-    'carothers hall': 470051813643649035, 
-    'blanton hall': 470051755456200714, 
-    'andrews hall': 470051617446690837, 
-    'prospective students': 579365237980135425, 
-    'class of 2024': 579366260240809987,
-    'class of 2023': 469347181409599488, 
-    'class of 2022': 469347157321973761, 
-    'class of 2021': 469347128368562197, 
-    'class of 2020': 469347098173898762, 
-    'class of 2019': 469347057560322048,
-    'gamer': 546120502314532910,
-    'parties': 625510143475449857,
-    'party': 625510143475449857
-}
-
-@client.command(name='rank')
-async def rank(ctx, *newRank):
-    """
-    Assigns a rank/role to a user, or deletes it if they already have it
-
-    Usage: $rank <school/college>
-
-    View all possible ranks with $ranks
-    """
-    if len(newRank) == 0:
-        await ctx.send("Use `$rank name` to add a rank.  Use `$ranks` to list all ranks")
-    else:
-        newRankName = ' '.join(newRank)
-        newRankName = newRankName.lower()
-        #Establish guild to use
-        utdiscord = client.get_guild(469153450953932800)
-        utuser = discord.utils.get(utdiscord.members, id=ctx.author.id)
-        try:
-            newRank = discord.utils.get(utdiscord.roles, id=allranks[newRankName])
-        except:
-            await ctx.send(f"{newRankName} not found.  Make sure it is typed the same way as in the list of ranks found in `$ranks`")
-
-        #Check if they already have the role.  If so, delete it.  Else add it
-        if newRank in utuser.roles:
-            #If so, delete it
-            await utuser.remove_roles(newRank)
-            await ctx.send(f'Removed rank {newRank.name} from {ctx.author.mention}')
-            logging.info(f'Removed rank {newRank.name} from {ctx.author.mention}')
-
-        else:
-            #Add it since they don't got it
-            await utuser.add_roles(newRank, reason="self assigned with Eyes of Texas")
-            await ctx.message.add_reaction('👌')
-            logging.info(f'Added rank {newRank.name} to {ctx.author.mention}')
-
-@client.command(name='ranks')
-async def ranks(ctx):
-    """
-    Lists all available ranks
-    """
-    output = ""
-    #Create embed object
-    embed = discord.Embed(title="Ranks", color=0xbf5700)
-    #Establish guild to use
-    utdiscord = client.get_guild(469153450953932800)
-
-    #Generate output
-    for role in allranks:
-        discRole = discord.utils.get(utdiscord.roles, id=allranks[role])
-        members = len(discRole.members)
-        output += f"`{discRole.name} {members} members`\n"
-
-    embed.add_field(name="Join with `$rank name`", value=output, inline=False)
-    await ctx.send(embed=embed)
 
 
 @client.command(name='usergraph', hidden=True)
