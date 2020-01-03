@@ -246,7 +246,23 @@ class SetRank(commands.Cog):
         self.RankSession = sessionmaker(bind=self.rank_engine)
         self.rankdb = self.RankSession()
         #prohibited ranks
-        self.PROHIBITED_RANKS = ["Founder", "Moderator", "Mod in Training", "Fake Nitro", "Time out", "Bots", "Server Mute", "Announcer", "Eyes of Texas", "Dyno", "Pokecord", "Rythm"]
+        self.PROHIBITED_RANKS = [
+            "Founder",
+            "Moderator",
+            "Mod in Training",
+            "Fake Nitro",
+            "Time out",
+            "Bots",
+            "Server Mute",
+            "Announcer",
+            "Eyes of Texas",
+            "Dyno",
+            "Pokecord",
+            "Rythm",
+            "Muted",
+            "Ping Bot",
+            "Nitro Booster"
+        ]
 
 
     class RankEntry(Base):
@@ -344,14 +360,29 @@ class SetRank(commands.Cog):
     async def embed_list_builder(self, ctx, all_ranks):
         """
         Sends an embedded list of ranks to the output channel
+        Gets around max of 1024 characters by breaking up into multiple messages
         """
-        embed = discord.Embed(title="Ranks", color=0xbf5700)
-        output = ""
+        #embed = discord.Embed(title="Ranks", color=0xbf5700)
+        #Make output an array of strings with each string having max of 1000 characters
+        output = [""]
+        i = 0
         for role in all_ranks:
-            output += f"`{role[0]} - {role[1]}, {role[2]} members`\n"
+            if  (int(len(output[i])/900)) == 1:
+                #print(f'the calculation is {output[i]} % 900 = {len(output[i])}')
+                i = i + 1
+                output.append("")
+            output[i] += f"`{role[0]} - {role[1]}, {role[2]} members`\n"
 
-        embed.add_field(name="All available ranks", value=output, inline=False)
-        await ctx.send(embed=embed)
+        #print(f'size of 1st str {len(output[i])}')
+        #print(len(output[0]))
+        #print(output)
+        #print(int(len(output[0])/900))
+        i = 1
+        for rank_list in output:
+            embed = discord.Embed(title=f'Ranks, pg {i}', color=0xbf5700)
+            i = i + 1
+            embed.add_field(name="All available ranks", value=rank_list, inline=False)
+            await ctx.send(embed=embed)
 
 
     @commands.command(name="-ranks")
@@ -429,6 +460,10 @@ class SetRank(commands.Cog):
                 await utuser.add_roles(newRank, reason="self assigned with Eyes of Texas")
                 await ctx.message.add_reaction('👌')
                 logging.info(f'Added rank {newRank.name} to {ctx.author.mention}')
+
+
+    #Now a college, location, and class, and group command, basically adds or deletes those from user
+    #or idk maybe do this  
 
 
 
@@ -853,8 +888,8 @@ async def cc(ctx, *args):
         await ctx.message.add_reaction('👌')
         logging.info(ctx.author.name + " added " + newCC.name + " with responce " + newCC.responce)
 
-
-@client.event
+"""
+#@client.event
 async def on_command_error(ctx, error):
     if isinstance(error, commands.errors.CommandNotFound):
         #await ctx.send(ctx.message.content)
@@ -868,7 +903,7 @@ async def on_command_error(ctx, error):
                 return
     else:
         print(error)
-
+"""
 
 
 @client.event
