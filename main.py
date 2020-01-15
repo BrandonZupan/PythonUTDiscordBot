@@ -488,7 +488,6 @@ async def on_ready():
 
 
 @client.command(name='hello')
-@commands.check(is_admin)
 async def hello(ctx):
     message = "Hello " + str(ctx.author).split('#')[0] + '!'
     await ctx.send(message)
