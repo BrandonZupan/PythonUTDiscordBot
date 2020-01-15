@@ -67,17 +67,21 @@ client = commands.Bot(command_prefix='$')
 
 
 async def is_admin(ctx):
-    #permissions = ctx.message.author.roles
-    role = discord.utils.get(ctx.guild.roles, id=490250496028704768)
-    #Moderator on UT Discord
-    if role in ctx.author.roles:
-        return True
-    #Admin on test server
-    role = discord.utils.get(ctx.guild.roles, id=527944399649243146)
-    if role in ctx.author.roles:
-        return True
-    else:
-        return False
+    """Checks if user has an admin role"""
+    admin_roles = {
+        'Founder': 469158572417089546,
+        'Moderator': 490250496028704768,
+        'UT Discord Admin': 667104998714245122
+    }
+
+    for role_id in admin_roles:
+        test_role = discord.utils.get(ctx.guild.roles, id=admin_roles[role_id])
+        if test_role in ctx.author.roles:
+            return True
+
+
+    await ctx.send("You do not have permission to do that")
+    return False
 
 async def in_secretChannel(ctx):
     """Checks if a command was used in a secret channel"""
@@ -484,6 +488,7 @@ async def on_ready():
 
 
 @client.command(name='hello')
+@commands.check(is_admin)
 async def hello(ctx):
     message = "Hello " + str(ctx.author).split('#')[0] + '!'
     await ctx.send(message)
@@ -788,7 +793,7 @@ async def cc(ctx, *args):
         logging.info(ctx.author.name + " added " + newCC.name + " with responce " + newCC.responce)
 
 
-#@client.event
+@client.event
 async def on_command_error(ctx, error):
     if isinstance(error, commands.errors.CommandNotFound):
         #await ctx.send(ctx.message.content)
