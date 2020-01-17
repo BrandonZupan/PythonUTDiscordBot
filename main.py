@@ -829,6 +829,11 @@ async def on_message(ctx):
     elif (message[0:4] == 'oman'):
         await ctx.add_reaction('🇴🇲')
         
+    #rlm message
+    if ctx.author.bot == False:
+        if ((' rlm' in message) or (message[0:4] == 'rlm ') or (message[0:3] == 'rlm')):
+            await ctx.channel.send("pma > rlm - <https://feebledribblings.wordpress.com/2017/10/10/town-hall-debrief/>")
+
     #Add an ickycat to anime
     if (ctx.channel.id == 565561419769315328):
         if ((ctx.attachments) or ('http://' in ctx.content) or ('https://' in ctx.content)):
