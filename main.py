@@ -1,4 +1,5 @@
 import sys
+import os
 import discord
 import twitterColorDetection
 from datetime import datetime
@@ -15,9 +16,30 @@ import bs4
 from PIL import Image, ImageFont, ImageDraw
 import sports_tracking
 import icon_animator
+import json
 
 #Start logging
 logging.basicConfig(level=logging.INFO)
+
+#Setup JSON config file
+CONFIG_FILE = 'config.json'
+CONFIG = {}
+if os.path.exists(CONFIG_FILE):
+    #load it
+    with open(CONFIG_FILE, "r") as config_file:
+        CONFIG = json.load(config_file)
+else:
+    #create file
+    config_template = {
+        "key": "put private key here",
+        "prefix": "!",
+        "name": "Bot",
+        "show_status": False
+    }
+    with open(CONFIG_FILE, "w") as config_file:
+        json.dump(config_template, config_file)
+    print(f"Please fill out {CONFIG_FILE}")
+    exit()
 
 #SQL Database
 engine = create_engine('sqlite:///responces.db', echo=False)
@@ -59,7 +81,7 @@ PostsSession = sessionmaker(bind=postsEngine)
 postsDB = PostsSession()
 
 #Discord client
-client = commands.Bot(command_prefix='$')
+client = commands.Bot(command_prefix=CONFIG['prefix'])
 
 ############
 ###Checks###
@@ -478,6 +500,10 @@ client.add_cog(SetRank(client))
 @client.event
 async def on_ready():
     print('We have logged in as {0.user}'.format(client))
+
+    #Set activity
+    if CONFIG['show_status'] == True:
+        await client.change_presence(activity=discord.Game(CONFIG['name']))
 
 
 
@@ -914,6 +940,4 @@ def logmessage(ctx, message):
 
 
 
-keyFile = open('keys.txt', 'r')
-key = keyFile.read()
-client.run(key)
+client.run(CONFIG['key'].strip())

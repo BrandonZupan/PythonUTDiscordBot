@@ -1,5 +1,6 @@
 # Discord Key File
 keys.txt
+*.json
 
 # Icons
 *.png
