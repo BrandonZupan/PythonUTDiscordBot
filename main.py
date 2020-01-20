@@ -668,8 +668,8 @@ class SetRank(commands.Cog):
         for rank_list in output:
             embed = discord.Embed(title=f'Ranks, pg {i}', color=0xbf5700)
             i = i + 1
-            embed.add_field(name="All available ranks", value=rank_list, inline=False)
-            await ctx.send(embed=embed)
+            embed.add_field(name="All available ranks, times out after 2 minutes", value=rank_list, inline=False)
+            await ctx.send(embed=embed, delete_after=120)
 
 
     @commands.command(name="ranks")
