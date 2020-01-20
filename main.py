@@ -48,9 +48,6 @@ engine = create_engine(CONFIG['database'], echo=False)
 postsEngine = create_engine("sqlite:///posts.db", echo=False)
 Base = declarative_base()
 
-#Nitro Database, must be approved into SQL
-global nitroCommands
-nitroCommands = {}
 
 class CCCommand(Base):
     """
