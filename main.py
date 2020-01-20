@@ -35,6 +35,7 @@ else:
         "key": "put private key here",
         "prefix": "!",
         "name": "Bot",
+        "database": "sqlite:///:memory:",
         "show_status": False
     }
     with open(CONFIG_FILE, "w") as config_file:
@@ -43,7 +44,7 @@ else:
     exit()
 
 #SQL Database
-engine = create_engine('sqlite:///responces.db', echo=False)
+engine = create_engine(CONFIG['database'], echo=False)
 postsEngine = create_engine("sqlite:///posts.db", echo=False)
 Base = declarative_base()
 
@@ -51,13 +52,17 @@ Base = declarative_base()
 global nitroCommands
 nitroCommands = {}
 
-class ccCommand(Base):
+class CCCommand(Base):
+    """
+    Makes object that database undserstands
+    """
     __tablename__ = "imageCommands"
-    
+
     #Has a column for the ID, name, and responce
     #id = Column(Integer, primary_key=True)
     name = Column(String, primary_key=True)
     responce = Column(String)
+    category = Column(String)   #help or fun
 
 class posts(Base):
     __tablename__ = datetime.now().strftime("%m-%y")
@@ -106,7 +111,7 @@ async def is_admin(ctx):
     await ctx.send("You do not have permission to do that")
     return False
 
-async def in_secretChannel(ctx):
+async def in_secret_channel(ctx):
     """Checks if a command was used in a secret channel"""
     secretChannels = {
         'ece-torture-dungeon': 508350921403662338,
@@ -119,6 +124,37 @@ async def in_secretChannel(ctx):
             return True
 
     #It dont exist
+    return False
+
+async def in_botspam(ctx):
+    """Checks if a command was done in a botspam channel"""
+    botspam = {
+        'eyes-of-texas': 532781500471443477,
+        'bot-commands': 469197513593847812,
+        'ece-torture-dungeon': 508350921403662338
+    }
+    used_channel = ctx.channel.id
+    for channel in botspam:
+        if botspam[channel] == used_channel:
+            return True
+
+    await ctx.send("Error: View the command list in a bot command channel like #voice-pastebin")
+    return False
+
+async def is_regular(ctx):
+    """Checks if they can be trusted to add help commands"""
+    regular_roles = {
+        'Founder': 469158572417089546,
+        'Moderator': 490250496028704768,
+        'UT Discord Admin': 667104998714245122
+    }
+
+    for role_id in regular_roles:
+        test_role = discord.utils.get(ctx.guild.roles, id=regular_roles[role_id])
+        if test_role in ctx.author.roles:
+            return True
+
+    await ctx.send("You do not have permission to do that")
     return False
 
 async def is_nitro(ctx):
@@ -138,6 +174,232 @@ async def is_brandon(ctx):
     """Checks if I ran this"""
     brandon = discord.utils.get(ctx.guild.members, id=158062741112881152)
     return brandon == ctx.author
+
+
+##################
+#Command Database#
+##################
+
+class CommandDB(commands.Cog):
+    """
+    Handles adding commands to a database
+    """
+
+    async def add_command(self, ctx, command, _responce, _category):
+        """
+        Adds a command to the database
+        Assumes user has permission to do it
+        """
+        new_command = CCCommand(
+            name=command.lower(),
+            responce=_responce,
+            category=_category)
+        session.merge(new_command)
+        session.commit()
+        await ctx.message.add_reaction('👌')
+        logging.info(
+            "%s added %s with responce %s to %s",
+            ctx.author.name,
+            new_command.name,
+            new_command.responce,
+            new_command.category)
+
+    async def delete_command(self, ctx, victim):
+        """
+        Removed a command from the database
+        Assumes the user has permission to do it
+        """
+        session.delete(victim)
+        session.commit()
+        await ctx.send(f"Deleted the command for {victim.name}")
+        logging.info(
+            "%s deleted %s from %s",
+            ctx.author.name,
+            victim.name,
+            victim.category
+        )
+        return
+
+    @commands.command(name='cc', hidden=True)
+    @commands.check(is_admin)
+    @commands.check(in_secret_channel)
+    async def cc_command(self, ctx, command, *, _responce):
+        """
+        Modifies the command database
+
+        List commands: !cc
+        Modify or create a command: !cc <command_name> <responce>
+        Delete a command: !cc <command_name>
+
+        Bot will confirm with :ok_hand:
+        """
+        #add a command
+        if ctx.message.mention_everyone == False:
+            CATEGORY = 'fun'
+            await self.add_command(ctx, command, _responce, CATEGORY)
+            return
+
+        else:
+            await ctx.send(f"Please do not use everyone or here, {ctx.author}")
+
+
+    @cc_command.error
+    async def cc_error(self, ctx, error):
+        if isinstance(error, commands.MissingRequiredArgument):
+            if error.param.name == 'command':
+                #Output command list
+                output = [""]
+                i = 0
+                for instance in session.query(CCCommand).order_by(CCCommand.name):
+                    if (int(len(output[i])/900)) == 1:
+                        i = i + 1
+                        output.append("")
+                    output[i] += f"{instance.name} "
+
+                i = 1
+                for message in output:
+                    embed = discord.Embed(
+                        title=f'CC commands, pg {i}',
+                        color=0xbf5700)
+                    embed.add_field(
+                        name='All CC commands, times out after 2 minutes',
+                        value = message,
+                        inline=False)
+                    i += 1
+                    await ctx.send(embed=embed, delete_after=120)
+
+            elif error.param.name == '_responce':
+                #delete a command
+                victim = session.query(CCCommand).filter_by(name=ctx.args[2]).one()
+                await self.delete_command(ctx, victim)
+
+
+    @commands.command(name='hc')
+    async def hc(self, ctx, command, *, _responce):
+        """
+        Shows troubleshooting command list
+        Usage: !hc
+
+        Admins and Regulars can add to the database
+        Modify or create a command: !hc <command_name> <responce>
+        Delete a command: !hc <command_name>
+
+        Bot will confirm with :ok_hand:
+        
+        """
+        if await is_regular(ctx) == True and await in_secret_channel(ctx) == True:
+            if ctx.message.mention_everyone == False:
+                CATEGORY = 'help'
+                await self.add_command(ctx, command, _responce, CATEGORY)
+                return
+
+            else:
+                await ctx.send(f"Please do not use everyone or here, {ctx.author}")
+
+
+    @hc.error
+    async def hc_error(self, ctx, error):
+        if isinstance(error, commands.MissingRequiredArgument):
+            if error.param.name == 'command':
+                #print(in_botspam(ctx))
+                if await in_botspam(ctx) == True:
+                    #Output the command list
+                    output = [""]
+                    i = 0
+                    for instance in session.query(CCCommand).order_by(CCCommand.name):
+                        if instance.category == 'help':
+                            if (int(len(output[i])/900)) == 1:
+                                i = i + 1
+                                output.append("")
+                            output[i] += f"{instance.name} "
+                    i = 1
+                    for message in output:
+                        #print(f"Messages: {message}")
+                        embed = discord.Embed(
+                            title=f'Help commands, pg {i}',
+                            color=0xbf5700)
+                        embed.add_field(
+                            name='All help commands, times out after 2 minutes',
+                            value=message,
+                            inline=False)
+                        i += 1
+                        await ctx.send(embed=embed, delete_after=120)
+
+                    return
+
+                else: 
+                    return
+
+            #Responce be missing so yeet it
+            elif error.param.name == '_responce':
+                #Make sure they be allowed
+                if await is_regular(ctx) == True and await in_secret_channel(ctx) == True:
+                    victim = session.query(CCCommand).filter_by(name=ctx.args[2]).one()
+                    if victim.category == 'help':
+                        await self.delete_command(ctx, victim)
+                    else:
+                        await ctx.send("hc can only delete help commands")
+
+        else:
+            await ctx.send("There was an error, details in log (in function hc_error)")
+            print(f"Error be different:{error}")
+            
+
+
+    @commands.command(name='cc-csv', hidden=True)
+    @commands.check(is_admin)
+    @commands.check(in_secret_channel)
+    async def cc_csv(self, ctx):
+        """
+        Generates a csv of the command database and posts it
+        """
+        with open('cc.csv', 'w', newline='') as csvfile:
+            csv_writer = csv.writer(csvfile)
+            for instance in session.query(CCCommand).order_by(CCCommand.name):
+                csv_writer.writerow([instance.category, instance.name, instance.responce])
+
+        await ctx.send(file=discord.File('cc.csv'))
+        os.remove('cc.csv')
+
+    @commands.command(name='import-csv', hidden=True)
+    @commands.check(is_admin)
+    @commands.check(in_secret_channel)
+    async def import_csv(self, ctx, filename):
+        """
+        ONLY RUN THIS IF YOU KNOW WHAT YOU ARE DOING
+        SO PROBABLY DON'T USE THIS COMMAND!!!!!!!!!!
+
+        Imports a csv file full of commands
+
+        Usage: !import-csv filename.csv
+        Note: File path is relative to server instance
+
+        File Format:
+        [category], [name], [responce]
+        """
+        try:
+            with open(filename, 'r', newline='') as csvfile:
+                reader = csv.reader(csvfile)
+                commands_added = 0
+                for row in reader:
+                    new_cc = CCCommand(
+                        category=row[0],
+                        name=row[1],
+                        responce=row[2])
+                    session.merge(new_cc)
+                    commands_added += 1
+
+                session.commit()
+                await ctx.send(f'Added {commands_added} commands to database')
+
+        #except FileNotFoundError:
+        #    await ctx.send("Error, file not found");
+        except Exception as oof:
+            await ctx.send("Something went wrong with import, check log for details")
+            logging.info(oof)
+            
+
+client.add_cog(CommandDB(client))
 
 #################
 #Sports Tracking#
@@ -557,7 +819,7 @@ async def usergraph(ctx):
 
 @client.command(name='userstats', hidden=True)
 @commands.check(is_admin)
-@commands.check(in_secretChannel)
+@commands.check(in_secret_channel)
 async def userstats(ctx, *user):
     """
     Returns stats about the user, such as amount of monthly posts
@@ -603,7 +865,7 @@ async def userstats(ctx, *user):
 
 @client.command(name='degenerates', hidden=True)
 @commands.check(is_admin)
-@commands.check(in_secretChannel)
+@commands.check(in_secret_channel)
 async def degenerates(ctx):
     """
     Returns a list of the top anime posters
@@ -687,148 +949,16 @@ async def john(ctx):
     return True
 
 
-@client.command(name='modifycommand')
-@commands.check(is_nitro)
-@commands.check(in_secretChannel)
-async def modifycommand(ctx, *args):
-    """
-    Nitro command for modifying the command database
+# @client.command(name='cc-csv', hidden=True)
+# async def cc_csv(ctx):
+#     with open('cc.csv', 'w', newline='') as csvfile:
+#         csv_writer = csv.writer(csvfile)
+#         for instance in session.query(ccCommand).order_by(ccCommand.name):
+#             print(instance.name)
+#             csv_writer.writerow(['', instance.name, instance.responce])
 
-    List commands: $modiftycommand
-    Modify or create a command: $modifycommand <command_name> <responce>
-
-    Action must be confirmed by a moderator with $approve <command_name>
-    """
-
-    #If zero arguments, list all commands
-    if len(args) == 0:
-        commandList = str()
-        for instance in session.query(ccCommand).order_by(ccCommand.name):
-            commandList += instance.name + ' '
-        await ctx.send(commandList)
-
-    #If 2 or more arguments, combine them and modify database
-    if len(args) >= 2:
-        #Add to nitro database
-        nitroCommands[args[0]] = ' '.join(args[1:])
-        await ctx.send("Recieved, please wait for moderator to confirm it")
-
-@client.command(name='pending', hidden=True)
-@commands.check(is_admin)
-@commands.check(in_secretChannel)
-async def pending(ctx):
-    """
-    List pending commands sent by nitro users
-
-    List pending: $pending
-    Approve a command: $approve <command_name>
-    Deny a command: $deny <command_name>
-    """
-    message = ""
-
-    #Check if there's pending commands, if so list them
-    if len(nitroCommands) >= 1:
-        for command in nitroCommands:
-            message += command + ": '" + nitroCommands[command] + "' "
-    
-    else:
-        message = "No pending commands"
-    await ctx.send(message)
-
-@client.command(name='approve', hidden=True)
-@commands.check(is_admin)
-@commands.check(in_secretChannel)
-async def approve(ctx, command):
-    """
-    Approve a command added by a nitro user
-
-    List pending: $pending
-    Approve a command: $approve <command_name>
-    Deny a command: $deny <command_name>
-    """
-
-    if command in nitroCommands.keys():
-        #Add it to the database
-        newCC = ccCommand(name=command, responce=nitroCommands[command])
-        session.merge(newCC)
-        session.commit()
-        #Remove from dict
-        del nitroCommands[command]
-        await ctx.message.add_reaction('👌')
-        logging.info(ctx.author.name + " added " + newCC.name + " with responce " + newCC.responce)
-    #Command not in dict
-    else:
-        await ctx.send("Error: Command not in queue")
-
-@client.command(name='deny', hidden=True)
-@commands.check(is_admin)
-@commands.check(in_secretChannel)
-async def deny(ctx, command):
-    """
-    Deny a command added by a nitro user
-
-    List pending: $pending
-    Approve a command: $approve <command_name>
-    Deny a command: $deny <command_name>
-    """
-    if command in nitroCommands.keys():
-        #Remove from dict
-        del nitroCommands[command]
-        await ctx.message.add_reaction('👌')
-    #Command not in dict
-    else:
-        await ctx.send("Error: Command not in queue")
-
-
-@client.command(name='cc', hidden=True)
-@commands.check(is_admin)
-@commands.check(in_secretChannel)
-async def cc(ctx, *args):
-    """
-    Modifies the command database
-
-    List commands: $cc
-    Modify or create a command: $cc <command_name> <responce>
-    Delete a command: $cc <command_name>
-
-    Bot will confirm with :ok_hand:
-    """
-    #If zero arguments, list all commands
-    if len(args) == 0:
-        commandList = str()
-        for instance in session.query(ccCommand).order_by(ccCommand.name):
-            commandList += instance.name + ' '
-        await ctx.send(commandList)
-
-    #If one argument, delete that command
-    if len(args) == 1:
-        victim = session.query(ccCommand).filter_by(name=args[0]).one()
-        session.delete(victim)
-        session.commit()
-        await ctx.message.add_reaction('👌')
-        logging.info(ctx.author.name + " deleted " + victim.name)
-
-    #If 2 or more arguments, combine them and modify database
-    if len(args) >= 2:
-        #newCC = ccCommand(args[0], ' '.join(args[1:]))
-        #await ctx.send("Command " + newCC.name + " with link " + newCC.responce)
-        newCC = ccCommand(name=args[0], responce=' '.join(args[1:]))
-        session.merge(newCC)
-        session.commit()
-        #await ctx.send("Command " + newCC.name + " with link " + newCC.responce)
-        await ctx.message.add_reaction('👌')
-        logging.info(ctx.author.name + " added " + newCC.name + " with responce " + newCC.responce)
-
-@client.command(name='cc-csv', hidden=True)
-async def cc_csv(ctx):
-    with open('cc.csv', 'w', newline='') as csvfile:
-        csv_writer = csv.writer(csvfile)
-        for instance in session.query(ccCommand).order_by(ccCommand.name):
-            print(instance.name)
-            csv_writer.writerow(['', instance.name, instance.responce])
-
-    await ctx.send(file=discord.File('cc.csv'))
-    os.remove('cc.csv')
+#     await ctx.send(file=discord.File('cc.csv'))
+#     os.remove('cc.csv')
 
 
 @client.event
@@ -839,7 +969,7 @@ async def on_command_error(ctx, error):
         command = command.split(" ", 1)
 
         #Look if its in the database
-        for instance in session.query(ccCommand).order_by(ccCommand.name):
+        for instance in session.query(CCCommand).order_by(CCCommand.name):
             if instance.name == command[0][1:]:
                 await ctx.send(instance.responce)
                 return

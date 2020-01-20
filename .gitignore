@@ -14,3 +14,4 @@ keys.txt
 
 #Database
 *.db
+*.csv
