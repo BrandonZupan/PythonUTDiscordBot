@@ -17,6 +17,7 @@ from PIL import Image, ImageFont, ImageDraw
 import sports_tracking
 import icon_animator
 import json
+import csv
 
 #Start logging
 logging.basicConfig(level=logging.INFO)
@@ -109,7 +110,8 @@ async def in_secretChannel(ctx):
     """Checks if a command was used in a secret channel"""
     secretChannels = {
         'ece-torture-dungeon': 508350921403662338,
-        'nitro-commands': 591363307487625227
+        'nitro-commands': 591363307487625227,
+        'eyes-of-texas': 532781500471443477
     }
     usedChannel = ctx.channel.id
     for channel in secretChannels:
@@ -816,6 +818,17 @@ async def cc(ctx, *args):
         #await ctx.send("Command " + newCC.name + " with link " + newCC.responce)
         await ctx.message.add_reaction('👌')
         logging.info(ctx.author.name + " added " + newCC.name + " with responce " + newCC.responce)
+
+@client.command(name='cc-csv', hidden=True)
+async def cc_csv(ctx):
+    with open('cc.csv', 'w', newline='') as csvfile:
+        csv_writer = csv.writer(csvfile)
+        for instance in session.query(ccCommand).order_by(ccCommand.name):
+            print(instance.name)
+            csv_writer.writerow(['', instance.name, instance.responce])
+
+    await ctx.send(file=discord.File('cc.csv'))
+    os.remove('cc.csv')
 
 
 @client.event
