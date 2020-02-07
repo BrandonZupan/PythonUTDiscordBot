@@ -18,7 +18,7 @@ import sports_tracking
 import icon_animator
 import json
 import csv
-import sympy
+import sympy.printing.preview
 
 #Start logging
 logging.basicConfig(level=logging.INFO)
@@ -925,12 +925,12 @@ async def score(ctx):
 
 @client.command(name='latex')
 async def latexCommand(ctx, *args):
-    latex_input = "".join(args)
+    latex_input = " ".join(args)
     latex_input = "$${}$$".format(latex_input)
     
     sympy.printing.preview(latex_input, viewer='file', filename='latex_output.png')
     await ctx.send(file=discord.File(open('latex_output.png', 'rb')))
-    os.remove('output.png')
+    os.remove('latex_output.png')
 
 @client.command(name='time')
 async def timeCommand(ctx):
