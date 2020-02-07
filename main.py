@@ -926,7 +926,7 @@ async def score(ctx):
 @client.command(name='latex')
 async def latexCommand(ctx, *args):
     latex_input = " ".join(args)
-    latex_input = "$${}$$".format(latex_input)
+    latex_input = "\\ {} \\".format(latex_input)
     
     sympy.printing.preview(latex_input, viewer='file', filename='latex_output.png')
     await ctx.send(file=discord.File(open('latex_output.png', 'rb')))
