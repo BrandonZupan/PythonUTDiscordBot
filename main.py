@@ -18,6 +18,7 @@ import sports_tracking
 import icon_animator
 import json
 import csv
+import sympy.printing.preview
 
 #Start logging
 logging.basicConfig(level=logging.INFO)
@@ -922,6 +923,14 @@ async def updateicon(ctx, color):
 async def score(ctx):
     await ctx.send("Texas beat OU 48 to 45 in the Red River Rivalry with a last second field goal by Dicker the Kicker! :metal:")
 
+@client.command(name='latex')
+async def latexCommand(ctx, *args):
+    latex_input = " ".join(args)
+    latex_input = "$${}$$".format(latex_input)
+    
+    sympy.printing.preview(latex_input, viewer='file', filename='latex_output.png')
+    await ctx.send(file=discord.File(open('latex_output.png', 'rb')))
+    os.remove('latex_output.png')
 
 @client.command(name='time')
 async def timeCommand(ctx):
