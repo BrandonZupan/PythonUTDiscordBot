@@ -9,9 +9,13 @@ keys.txt
 *.gif
 *.mp4
 
-#Python stuff
+# Python stuff
 /__pycache__
+venv/
 
-#Database
+# Pycharm
+.idea/
+
+# Database
 *.db
 *.csv
