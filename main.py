@@ -705,7 +705,8 @@ class SetRank(commands.Cog):
         utdiscord = client.get_guild(469153450953932800)
         for rank in all_ranks_id:
             ut_role = discord.utils.get(utdiscord.roles, id=rank[0])
-            all_ranks.append((rank[1], ut_role.name, str(len(ut_role.members))))
+            if ut_role is not None:
+                all_ranks.append((rank[1], ut_role.name, str(len(ut_role.members))))
         #Sort it with a lambda function, first by name of role then by name of category
         all_ranks.sort(key=lambda tup: tup[1])
         all_ranks.sort(key=lambda tup: tup[0])
