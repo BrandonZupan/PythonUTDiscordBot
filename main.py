@@ -106,7 +106,7 @@ async def is_admin(ctx):
             return True
 
 
-    await ctx.send("You do not have permission to do that")
+    # await ctx.send("You do not have permission to do that")
     return False
 
 async def in_secret_channel(ctx):
@@ -136,7 +136,7 @@ async def in_botspam(ctx):
         if botspam[channel] == used_channel:
             return True
 
-    await ctx.send("Error: View the command list in a bot command channel like #voice-pastebin")
+    # await ctx.send("Error: View the command list in a bot command channel like #voice-pastebin")
     return False
 
 async def is_regular(ctx):
@@ -152,7 +152,7 @@ async def is_regular(ctx):
         if test_role in ctx.author.roles:
             return True
 
-    await ctx.send("You do not have permission to do that")
+    # await ctx.send("You do not have permission to do that")
     return False
 
 async def is_nitro(ctx):
@@ -811,14 +811,14 @@ async def startvpn(ctx):
 
 
 @client.command(name='usergraph', hidden=True)
-@commands.check(is_admin)
+# @commands.check(is_admin)
 async def usergraph(ctx):
     await joinChartGenerator(ctx)
 
 
 @client.command(name='userstats', hidden=True)
-@commands.check(is_admin)
-@commands.check(in_secret_channel)
+# @commands.check(is_admin)
+# @commands.check(in_secret_channel)
 async def userstats(ctx, *user):
     """
     Returns stats about the user, such as amount of monthly posts
