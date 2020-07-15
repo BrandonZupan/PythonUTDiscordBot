@@ -1008,7 +1008,7 @@ async def on_message(ctx):
     #rlm message
     if ctx.author.bot == False:
         if ((' rlm' in message) or (message[0:4] == 'rlm ') or (message[0:3] == 'rlm')):
-            await ctx.channel.send("pma > rlm - <https://feebledribblings.wordpress.com/2017/10/10/town-hall-debrief/>")
+            await ctx.channel.send("RLM is now PMA")
 
     #Add an ickycat to anime
     if (ctx.channel.id == 565561419769315328):
